@@ -27,18 +27,18 @@ public class CoreGAS : ModuleRules
 			{
 				"Core",
 				"CoreUObject",
+				"Engine",
 				"EnhancedInput",
                 "GameplayAbilities",
                 "GameplayTags",
                 "GameplayTasks"
             }
 			);
-			
-		
+
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
-				"Engine",
 				"Slate",
 				"SlateCore",
 			}
