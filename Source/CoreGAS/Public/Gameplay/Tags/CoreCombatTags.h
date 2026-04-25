@@ -20,4 +20,8 @@ namespace CoreGAS::Combat
 	// SetByCaller tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_SetByCaller_DamageAmount)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_SetByCaller_HealAmount)
+
+	// Melee event tags
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceBegin)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceEnd)
 }

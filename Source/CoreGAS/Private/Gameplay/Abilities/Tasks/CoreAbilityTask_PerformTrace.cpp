@@ -2,7 +2,7 @@
 
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_PerformTrace.h"
 
-UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::Instant(
+UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::PerformTraceInstant(
 	UGameplayAbility* OwningAbility,
 	UCoreTraceConfig* Config,
 	FVector CustomStart,
@@ -16,7 +16,7 @@ UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::Instant(
 	return Task;
 }
 
-UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::Tick(
+UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::PerformTraceTick(
 	UGameplayAbility* OwningAbility,
 	UCoreTraceConfig* Config,
 	float Duration,

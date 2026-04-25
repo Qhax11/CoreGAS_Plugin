@@ -30,7 +30,8 @@ UENUM(BlueprintType)
 enum class ETraceEndLocation : uint8
 {
 	ForwardVector,
-	Custom
+	Custom,
+	Socket
 };
 
 UCLASS(BlueprintType)
@@ -59,6 +60,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace", meta = (EditCondition = "StartLocation == ETraceStartLocation::Socket", EditConditionHides))
 	FName SocketName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace", meta = (EditCondition = "EndLocation == ETraceEndLocation::Socket", EditConditionHides))
+	FName EndSocketName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace")
 	float TraceDistance = 1000.f;

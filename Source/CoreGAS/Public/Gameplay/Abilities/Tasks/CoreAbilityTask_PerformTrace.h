@@ -21,7 +21,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Ability|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UCoreAbilityTask_PerformTrace* Instant(
+	static UCoreAbilityTask_PerformTrace* PerformTraceInstant(
 		UGameplayAbility* OwningAbility,
 		UCoreTraceConfig* Config,
 		FVector CustomStart = FVector::ZeroVector,
@@ -29,7 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Ability|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static UCoreAbilityTask_PerformTrace* Tick(
+	static UCoreAbilityTask_PerformTrace* PerformTraceTick(
 		UGameplayAbility* OwningAbility,
 		UCoreTraceConfig* Config,
 		float Duration,
