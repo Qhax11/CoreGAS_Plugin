@@ -3,3 +3,8 @@
 
 #include "Gameplay/Abilities/CoreGameplayAbilityBase.h"
 
+UCoreGameplayAbilityBase::UCoreGameplayAbilityBase()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
+}
+

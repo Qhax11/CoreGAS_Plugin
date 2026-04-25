@@ -22,6 +22,8 @@ class COREGAS_API UCoreGameplayAbility_Montage : public UCoreGameplayAbilityBase
 	GENERATED_BODY()
 
 public:
+	UCoreGameplayAbility_Montage();
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 

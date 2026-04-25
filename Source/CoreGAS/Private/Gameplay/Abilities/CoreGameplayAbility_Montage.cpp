@@ -3,6 +3,11 @@
 #include "Gameplay/Abilities/CoreGameplayAbility_Montage.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
+UCoreGameplayAbility_Montage::UCoreGameplayAbility_Montage()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
+}
+
 void UCoreGameplayAbility_Montage::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
@@ -33,6 +38,11 @@ void UCoreGameplayAbility_Montage::EndAbility(const FGameplayAbilitySpecHandle H
 {
 	if (MontageTask)
 	{
+		MontageTask->OnCompleted.RemoveAll(this);
+		MontageTask->OnBlendOut.RemoveAll(this);
+		MontageTask->OnInterrupted.RemoveAll(this);
+		MontageTask->OnCancelled.RemoveAll(this);
+		MontageTask->EventReceived.RemoveAll(this);
 		MontageTask->EndTask();
 		MontageTask = nullptr;
 	}

@@ -14,6 +14,8 @@ class COREGAS_API UCoreGameplayAbilityBase : public UGameplayAbility
 	GENERATED_BODY()
 
 public:
+	UCoreGameplayAbilityBase();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Ability")
 	FGameplayTag AbilityInputTag;
 };

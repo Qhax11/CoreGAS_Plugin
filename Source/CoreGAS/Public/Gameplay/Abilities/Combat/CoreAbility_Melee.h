@@ -16,6 +16,8 @@ class COREGAS_API UCoreAbility_Melee : public UCoreGameplayAbility_Montage
 	GENERATED_BODY()
 
 public:
+	UCoreAbility_Melee();
+
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 

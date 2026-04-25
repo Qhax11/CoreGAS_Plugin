@@ -6,6 +6,11 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
+UCoreAbility_Melee::UCoreAbility_Melee()
+{
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
+}
+
 void UCoreAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
