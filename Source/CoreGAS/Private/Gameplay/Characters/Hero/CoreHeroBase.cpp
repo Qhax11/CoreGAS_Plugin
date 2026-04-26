@@ -6,6 +6,7 @@
 #include "Gameplay/Attributes/Hero/CoreHeroAttributeSet.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Data/CoreHeroData.h"
+#include "Gameplay/Types/CoreGASTypes.h"
 
 UCoreASCBase* ACoreHeroBase::GetCoreAbilitySystemComponent() const
 {
@@ -14,6 +15,11 @@ UCoreASCBase* ACoreHeroBase::GetCoreAbilitySystemComponent() const
 
 ACoreHeroBase::ACoreHeroBase()
 {
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionObjectType(ECC_Hero);
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Damage, ECR_Block);
+
 	HeroInputComponent = CreateDefaultSubobject<UCoreHeroInputComponent>(TEXT("HeroInputComponent"));
 	HeroGASDataComponent = CreateDefaultSubobject<UCoreHeroGASDataComponent>(TEXT("HeroGASDataComponent"));
 	HeroAttributeSet = CreateDefaultSubobject<UCoreHeroAttributeSet>(TEXT("HeroAttributeSet"));

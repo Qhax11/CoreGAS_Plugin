@@ -4,6 +4,7 @@
 #include "Gameplay/Characters/Enemy/Components/CoreEnemyGASDataComponent.h"
 #include "Gameplay/Attributes/Enemy/CoreEnemyAttributeSet.h"
 #include "Gameplay/Components/CoreASCBase.h"
+#include "Gameplay/Types/CoreGASTypes.h"
 
 UCoreASCBase* ACoreEnemyBase::GetCoreAbilitySystemComponent() const
 {
@@ -12,6 +13,11 @@ UCoreASCBase* ACoreEnemyBase::GetCoreAbilitySystemComponent() const
 
 ACoreEnemyBase::ACoreEnemyBase()
 {
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	GetMesh()->SetCollisionObjectType(ECC_Enemy);
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_Damage, ECR_Block);
+
 	EnemyGASDataComponent = CreateDefaultSubobject<UCoreEnemyGASDataComponent>(TEXT("EnemyGASDataComponent"));
 	EnemyAttributeSet = CreateDefaultSubobject<UCoreEnemyAttributeSet>(TEXT("EnemyAttributeSet"));
 }

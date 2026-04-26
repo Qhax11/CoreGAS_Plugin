@@ -112,7 +112,7 @@ void UCoreTraceConfig::DrawDebugTrace(UWorld* World, FVector Start, FVector End,
 	DrawDebugPoint(World, End, 10.f, FColor::Red, false, DebugDuration);
 }
 
-TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd) const
+TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd, AActor* Instigator) const
 {
 	if (!Owner)
 	{
@@ -132,9 +132,9 @@ TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart,
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex = false;
-	if (bIgnoreSelf)
+	if (bIgnoreInstigator && Instigator)
 	{
-		QueryParams.AddIgnoredActor(Owner);
+		QueryParams.AddIgnoredActor(Instigator);
 	}
 
 	TArray<FHitResult> HitResults;

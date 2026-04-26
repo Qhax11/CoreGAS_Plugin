@@ -79,7 +79,7 @@ void UCoreAbilityTask_PerformTrace::PerformTrace()
 	}
 
 	AActor* TraceOwner = CachedWeaponActor ? CachedWeaponActor.Get() : AvatarActor;
-	TArray<FHitResult> HitResults = TraceConfig->Execute(TraceOwner, CachedCustomStart, CachedCustomEnd);
+	TArray<FHitResult> HitResults = TraceConfig->Execute(TraceOwner, CachedCustomStart, CachedCustomEnd, AvatarActor);
 
 	if (HitResults.Num() > 0 && ShouldBroadcastAbilityTaskDelegates())
 	{

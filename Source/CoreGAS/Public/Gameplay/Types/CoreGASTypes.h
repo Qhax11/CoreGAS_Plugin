@@ -3,12 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/EngineTypes.h"
 #include "GameplayTagContainer.h"
 #include "AttributeSet.h"
 #include "GameplayEffectExecutionCalculation.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Attributes/CoreAttributeSetBase.h"
 #include "CoreGASTypes.generated.h"
+
+// Collision Object Channels - must match DefaultEngine.ini channel assignments
+#define ECC_Hero    ECC_GameTraceChannel1
+#define ECC_Enemy   ECC_GameTraceChannel2
+
+// Collision Trace Channels
+#define ECC_Damage  ECC_GameTraceChannel3
 
 USTRUCT(BlueprintType)
 struct FCoreAttributeChangeData

@@ -71,7 +71,7 @@ public:
 	TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace")
-	bool bIgnoreSelf = true;
+	bool bIgnoreInstigator = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace")
 	bool bSingleTarget = true;
@@ -85,7 +85,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Trace|Debug")
 	float DebugDuration = 1.f;
 
-	TArray<FHitResult> Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd) const;
+	TArray<FHitResult> Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd, AActor* Instigator = nullptr) const;
 
 private:
 	FVector GetStartLocation(AActor* Owner, FVector CustomStart) const;
