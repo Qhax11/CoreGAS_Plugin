@@ -21,4 +21,8 @@ namespace CoreGAS::Combat
 	// Melee event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceBegin, "CoreGAS.Event.Melee.TraceBegin")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd,   "CoreGAS.Event.Melee.TraceEnd")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceBegin_RightHand, "CoreGAS.Event.Melee.TraceBegin.RightHand")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceBegin_LeftHand,  "CoreGAS.Event.Melee.TraceBegin.LeftHand")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd_RightHand,   "CoreGAS.Event.Melee.TraceEnd.RightHand")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd_LeftHand,    "CoreGAS.Event.Melee.TraceEnd.LeftHand")
 }

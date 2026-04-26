@@ -3,6 +3,7 @@
 #include "Gameplay/Components/CoreEquipmentComponent.h"
 #include "Gameplay/Actors/Weapon/CoreWeaponBase.h"
 #include "Gameplay/Data/CoreEquipmentData.h"
+#include "Gameplay/Data/CoreWeaponSlotData.h"
 #include "Components/SkeletalMeshComponent.h"
 
 UCoreEquipmentComponent::UCoreEquipmentComponent()
@@ -20,13 +21,13 @@ void UCoreEquipmentComponent::BeginPlay()
 		return;
 	}
 
-	for (const TPair<FName, TSubclassOf<ACoreWeaponBase>>& Entry : EquipmentData->DefaultWeapons)
+	for (const FCoreWeaponSlotData& Entry : EquipmentData->DefaultWeapons)
 	{
-		EquipWeaponByClass(Entry.Value, Entry.Key);
+		EquipWeaponByClass(Entry.WeaponClass, Entry.AttachSocket, Entry.SlotTag);
 	}
 }
 
-void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName SocketName)
+void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName AttachSocket, FGameplayTag SlotTag)
 {
 	if (!WeaponClass || !GetOwner() || !GetOwner()->GetWorld())
 	{
@@ -40,19 +41,19 @@ void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> We
 		return;
 	}
 
-	EquipWeapon(SpawnedWeapon, SocketName);
+	EquipWeapon(SpawnedWeapon, AttachSocket, SlotTag);
 }
 
-void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName SocketName)
+void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName AttachSocket, FGameplayTag SlotTag)
 {
 	if (!Weapon)
 	{
 		return;
 	}
 
-	if (EquippedWeapons.Contains(SocketName))
+	if (EquippedWeapons.Contains(SlotTag))
 	{
-		UnequipWeapon(SocketName);
+		UnequipWeapon(SlotTag);
 	}
 
 	USkeletalMeshComponent* OwnerMesh = GetOwner() ? GetOwner()->FindComponentByClass<USkeletalMeshComponent>() : nullptr;
@@ -63,32 +64,32 @@ void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName SocketN
 	}
 
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, false);
-	Weapon->AttachToComponent(OwnerMesh, AttachRules, SocketName);
-	EquippedWeapons.Add(SocketName, Weapon);
+	Weapon->AttachToComponent(OwnerMesh, AttachRules, AttachSocket);
+	EquippedWeapons.Add(SlotTag, Weapon);
 }
 
-void UCoreEquipmentComponent::UnequipWeapon(FName SocketName)
+void UCoreEquipmentComponent::UnequipWeapon(FGameplayTag SlotTag)
 {
-	TObjectPtr<ACoreWeaponBase>* Found = EquippedWeapons.Find(SocketName);
+	TObjectPtr<ACoreWeaponBase>* Found = EquippedWeapons.Find(SlotTag);
 	if (!Found || !(*Found))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("UCoreEquipmentComponent::UnequipWeapon - No weapon in slot '%s'"), *SocketName.ToString());
+		UE_LOG(LogTemp, Warning, TEXT("UCoreEquipmentComponent::UnequipWeapon - No weapon in slot '%s'"), *SlotTag.ToString());
 		return;
 	}
 
 	(*Found)->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-	EquippedWeapons.Remove(SocketName);
+	EquippedWeapons.Remove(SlotTag);
 }
 
-ACoreWeaponBase* UCoreEquipmentComponent::GetWeaponAtSlot(FName SocketName) const
+ACoreWeaponBase* UCoreEquipmentComponent::GetWeaponBySlotTag(FGameplayTag SlotTag) const
 {
-	const TObjectPtr<ACoreWeaponBase>* Found = EquippedWeapons.Find(SocketName);
+	const TObjectPtr<ACoreWeaponBase>* Found = EquippedWeapons.Find(SlotTag);
 	return Found ? Found->Get() : nullptr;
 }
 
 ACoreWeaponBase* UCoreEquipmentComponent::GetFirstWeapon() const
 {
-	for (const TPair<FName, TObjectPtr<ACoreWeaponBase>>& Pair : EquippedWeapons)
+	for (const TPair<FGameplayTag, TObjectPtr<ACoreWeaponBase>>& Pair : EquippedWeapons)
 	{
 		if (Pair.Value)
 		{

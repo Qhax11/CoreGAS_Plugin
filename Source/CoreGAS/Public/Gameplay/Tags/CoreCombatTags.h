@@ -24,4 +24,8 @@ namespace CoreGAS::Combat
 	// Melee event tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceBegin)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceEnd)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceBegin_RightHand)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceBegin_LeftHand)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceEnd_RightHand)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceEnd_LeftHand)
 }

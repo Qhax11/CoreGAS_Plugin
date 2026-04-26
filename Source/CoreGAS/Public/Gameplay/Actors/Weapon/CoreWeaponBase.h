@@ -23,6 +23,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Weapon")
 	FVector GetTraceEnd() const;
 
+	UCoreTraceConfig* GetTraceConfig() const;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UStaticMeshComponent> WeaponMesh;

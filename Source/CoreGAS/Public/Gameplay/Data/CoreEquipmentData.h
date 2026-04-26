@@ -4,9 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Gameplay/Data/CoreWeaponSlotData.h"
 #include "CoreEquipmentData.generated.h"
-
-class ACoreWeaponBase;
 
 UCLASS(BlueprintType)
 class COREGAS_API UCoreEquipmentData : public UPrimaryDataAsset
@@ -15,5 +14,5 @@ class COREGAS_API UCoreEquipmentData : public UPrimaryDataAsset
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Equipment")
-	TMap<FName, TSubclassOf<ACoreWeaponBase>> DefaultWeapons;
+	TArray<FCoreWeaponSlotData> DefaultWeapons;
 };

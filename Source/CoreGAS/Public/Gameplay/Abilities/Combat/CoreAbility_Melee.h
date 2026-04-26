@@ -6,8 +6,9 @@
 #include "Gameplay/Abilities/CoreGameplayAbility_Montage.h"
 #include "CoreAbility_Melee.generated.h"
 
-class UCoreTraceConfig;
 class UCoreAbilityTask_PerformTrace;
+class UCoreEquipmentComponent;
+class ACoreWeaponBase;
 class UGameplayEffect;
 
 UCLASS()
@@ -25,9 +26,6 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee")
-	TObjectPtr<UCoreTraceConfig> TraceConfig;
-
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee")
 	TArray<TSubclassOf<UGameplayEffect>> HitEffects;
 

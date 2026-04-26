@@ -5,11 +5,13 @@
 UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::PerformTraceInstant(
 	UGameplayAbility* OwningAbility,
 	UCoreTraceConfig* Config,
+	AActor* WeaponActor,
 	FVector CustomStart,
 	FVector CustomEnd)
 {
 	UCoreAbilityTask_PerformTrace* Task = NewAbilityTask<UCoreAbilityTask_PerformTrace>(OwningAbility);
 	Task->TraceConfig = Config;
+	Task->CachedWeaponActor = WeaponActor;
 	Task->CachedCustomStart = CustomStart;
 	Task->CachedCustomEnd = CustomEnd;
 	Task->bInstantMode = true;
@@ -20,11 +22,13 @@ UCoreAbilityTask_PerformTrace* UCoreAbilityTask_PerformTrace::PerformTraceTick(
 	UGameplayAbility* OwningAbility,
 	UCoreTraceConfig* Config,
 	float Duration,
+	AActor* WeaponActor,
 	FVector CustomStart,
 	FVector CustomEnd)
 {
 	UCoreAbilityTask_PerformTrace* Task = NewAbilityTask<UCoreAbilityTask_PerformTrace>(OwningAbility);
 	Task->TraceConfig = Config;
+	Task->CachedWeaponActor = WeaponActor;
 	Task->CachedCustomStart = CustomStart;
 	Task->CachedCustomEnd = CustomEnd;
 	Task->bInstantMode = false;
@@ -74,7 +78,8 @@ void UCoreAbilityTask_PerformTrace::PerformTrace()
 		return;
 	}
 
-	TArray<FHitResult> HitResults = TraceConfig->Execute(AvatarActor, CachedCustomStart, CachedCustomEnd);
+	AActor* TraceOwner = CachedWeaponActor ? CachedWeaponActor.Get() : AvatarActor;
+	TArray<FHitResult> HitResults = TraceConfig->Execute(TraceOwner, CachedCustomStart, CachedCustomEnd);
 
 	if (HitResults.Num() > 0 && ShouldBroadcastAbilityTaskDelegates())
 	{

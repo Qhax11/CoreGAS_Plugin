@@ -4,10 +4,113 @@
 #include "Gameplay/Tracing/CoreTraceOriginProvider.h"
 #include "CollisionShape.h"
 #include "CollisionQueryParams.h"
-#include "Components/SkeletalMeshComponent.h"
+#include "Components/MeshComponent.h"
 #include "DrawDebugHelpers.h"
 #include "KismetTraceUtils.h"
 #include "Engine/World.h"
+
+FVector UCoreTraceConfig::GetStartLocation(AActor* Owner, FVector CustomStart) const
+{
+	switch (StartLocation)
+	{
+	case ETraceStartLocation::Camera:
+		if (ICoreTraceOriginProvider* Provider = Cast<ICoreTraceOriginProvider>(Owner))
+		{
+			return Provider->GetTraceOrigin();
+		}
+		return Owner->GetActorLocation();
+
+	case ETraceStartLocation::Socket:
+	{
+		TArray<UMeshComponent*> MeshComponents;
+		Owner->GetComponents<UMeshComponent>(MeshComponents);
+		for (UMeshComponent* Mesh : MeshComponents)
+		{
+			if (Mesh && Mesh->DoesSocketExist(SocketName))
+			{
+				return Mesh->GetSocketLocation(SocketName);
+			}
+		}
+		UE_LOG(LogTemp, Warning, TEXT("UCoreTraceConfig::GetStartLocation - Socket '%s' not found on %s"), *SocketName.ToString(), *Owner->GetName());
+		return Owner->GetActorLocation();
+	}
+
+	case ETraceStartLocation::Custom:
+		return CustomStart;
+
+	default: // Avatar
+		return Owner->GetActorLocation();
+	}
+}
+
+FVector UCoreTraceConfig::GetEndLocation(AActor* Owner, FVector CustomEnd, FVector ResolvedStart) const
+{
+	switch (EndLocation)
+	{
+	case ETraceEndLocation::Custom:
+		return CustomEnd;
+
+	case ETraceEndLocation::Socket:
+	{
+		TArray<UMeshComponent*> MeshComponents;
+		Owner->GetComponents<UMeshComponent>(MeshComponents);
+		for (UMeshComponent* Mesh : MeshComponents)
+		{
+			if (Mesh && Mesh->DoesSocketExist(EndSocketName))
+			{
+				return Mesh->GetSocketLocation(EndSocketName);
+			}
+		}
+		UE_LOG(LogTemp, Warning, TEXT("UCoreTraceConfig::GetEndLocation - Socket '%s' not found on %s"), *EndSocketName.ToString(), *Owner->GetName());
+		return Owner->GetActorLocation();
+	}
+
+	default: // ForwardVector
+		return ResolvedStart + Owner->GetActorForwardVector() * TraceDistance;
+	}
+}
+
+FCollisionShape UCoreTraceConfig::BuildCollisionShape() const
+{
+	switch (ShapeType)
+	{
+	case ETraceShapeType::Sphere:
+		return FCollisionShape::MakeSphere(ShapeRadius);
+	case ETraceShapeType::Box:
+		return FCollisionShape::MakeBox(ShapeHalfExtent);
+	case ETraceShapeType::Capsule:
+		return FCollisionShape::MakeCapsule(ShapeRadius, FMath::Max(ShapeHalfHeight, ShapeRadius));
+	default: // Line
+		return FCollisionShape();
+	}
+}
+
+void UCoreTraceConfig::DrawDebugTrace(UWorld* World, FVector Start, FVector End, FRotator Direction) const
+{
+	if (!bDrawDebug)
+	{
+		return;
+	}
+
+	switch (ShapeType)
+	{
+	case ETraceShapeType::Line:
+		DrawDebugLine(World, Start, End, DebugColor, false, DebugDuration);
+		break;
+	case ETraceShapeType::Sphere:
+		DrawDebugSweptSphere(World, Start, End, ShapeRadius, DebugColor, false, DebugDuration);
+		break;
+	case ETraceShapeType::Box:
+		DrawDebugSweptBox(World, Start, End, Direction, ShapeHalfExtent, DebugColor, false, DebugDuration);
+		break;
+	case ETraceShapeType::Capsule:
+		DrawDebugSweptSphere(World, Start, End, ShapeRadius, DebugColor, false, DebugDuration);
+		break;
+	}
+
+	DrawDebugPoint(World, Start, 10.f, FColor::Green, false, DebugDuration);
+	DrawDebugPoint(World, End, 10.f, FColor::Red, false, DebugDuration);
+}
 
 TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd) const
 {
@@ -22,96 +125,11 @@ TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart,
 		return {};
 	}
 
-	// Resolve start position
-	FVector Start;
-	FRotator StartRotation;
+	const FVector Start = GetStartLocation(Owner, CustomStart);
+	const FVector End = GetEndLocation(Owner, CustomEnd, Start);
+	const FRotator Direction = (End - Start).Rotation();
+	const FCollisionShape CollisionShape = BuildCollisionShape();
 
-	switch (StartLocation)
-	{
-	case ETraceStartLocation::Camera:
-		if (ICoreTraceOriginProvider* Provider = Cast<ICoreTraceOriginProvider>(Owner))
-		{
-			Start = Provider->GetTraceOrigin();
-			StartRotation = Provider->GetTraceDirection();
-		}
-		else
-		{
-			Start = Owner->GetActorLocation();
-			StartRotation = Owner->GetActorRotation();
-		}
-		break;
-
-	case ETraceStartLocation::Socket:
-		if (USkeletalMeshComponent* Mesh = Owner->FindComponentByClass<USkeletalMeshComponent>())
-		{
-			Start = Mesh->DoesSocketExist(SocketName) ? Mesh->GetSocketLocation(SocketName) : Owner->GetActorLocation();
-		}
-		else
-		{
-			Start = Owner->GetActorLocation();
-		}
-		StartRotation = Owner->GetActorRotation();
-		break;
-
-	case ETraceStartLocation::Custom:
-		Start = CustomStart;
-		StartRotation = Owner->GetActorRotation();
-		break;
-
-	default: // Avatar
-		Start = Owner->GetActorLocation();
-		StartRotation = Owner->GetActorRotation();
-		break;
-	}
-
-	// Resolve end position
-	FVector End;
-	switch (EndLocation)
-	{
-	case ETraceEndLocation::Custom:
-		End = CustomEnd;
-		break;
-	case ETraceEndLocation::Socket:
-	{
-		USkeletalMeshComponent* Mesh = Owner->FindComponentByClass<USkeletalMeshComponent>();
-		if (Mesh && Mesh->DoesSocketExist(EndSocketName))
-		{
-			End = Mesh->GetSocketLocation(EndSocketName);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("UCoreTraceConfig::Execute - EndSocketName '%s' not found on %s, falling back to owner location."), *EndSocketName.ToString(), *Owner->GetName());
-			End = Owner->GetActorLocation();
-		}
-		break;
-	}
-	default: // ForwardVector
-		End = Start + StartRotation.Vector() * TraceDistance;
-		break;
-	}
-
-	// Direction derived from the resolved trace path
-	FRotator Direction = (End - Start).Rotation();
-
-	// Build collision shape
-	FCollisionShape CollisionShape;
-	switch (ShapeType)
-	{
-	case ETraceShapeType::Sphere:
-		CollisionShape = FCollisionShape::MakeSphere(ShapeRadius);
-		break;
-	case ETraceShapeType::Box:
-		CollisionShape = FCollisionShape::MakeBox(ShapeHalfExtent);
-		break;
-	case ETraceShapeType::Capsule:
-		CollisionShape = FCollisionShape::MakeCapsule(ShapeRadius, FMath::Max(ShapeHalfHeight, ShapeRadius));
-		break;
-	default: // Line
-		CollisionShape = FCollisionShape();
-		break;
-	}
-
-	// Build query params
 	FCollisionQueryParams QueryParams;
 	QueryParams.bTraceComplex = false;
 	if (bIgnoreSelf)
@@ -119,7 +137,6 @@ TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart,
 		QueryParams.AddIgnoredActor(Owner);
 	}
 
-	// Perform trace
 	TArray<FHitResult> HitResults;
 
 	if (bSingleTarget)
@@ -151,28 +168,7 @@ TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart,
 		}
 	}
 
-	// Draw debug
-	if (bDrawDebug)
-	{
-		switch (ShapeType)
-		{
-		case ETraceShapeType::Line:
-			DrawDebugLine(World, Start, End, DebugColor, false, DebugDuration);
-			break;
-		case ETraceShapeType::Sphere:
-			DrawDebugSweptSphere(World, Start, End, ShapeRadius, DebugColor, false, DebugDuration);
-			break;
-		case ETraceShapeType::Box:
-			DrawDebugSweptBox(World, Start, End, Direction, ShapeHalfExtent, DebugColor, false, DebugDuration);
-			break;
-		case ETraceShapeType::Capsule:
-		{
-			const float ClampedHalfHeight = FMath::Max(ShapeHalfHeight, ShapeRadius);
-			DrawDebugCapsule(World, (Start + End) * 0.5f, ClampedHalfHeight, ShapeRadius, Direction.Quaternion(), DebugColor, false, DebugDuration);
-			break;
-		}
-		}
-	}
+	DrawDebugTrace(World, Start, End, Direction);
 
 	return HitResults;
 }

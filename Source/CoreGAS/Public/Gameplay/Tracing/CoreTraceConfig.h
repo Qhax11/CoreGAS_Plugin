@@ -86,4 +86,10 @@ public:
 	float DebugDuration = 1.f;
 
 	TArray<FHitResult> Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd) const;
+
+private:
+	FVector GetStartLocation(AActor* Owner, FVector CustomStart) const;
+	FVector GetEndLocation(AActor* Owner, FVector CustomEnd, FVector ResolvedStart) const;
+	FCollisionShape BuildCollisionShape() const;
+	void DrawDebugTrace(UWorld* World, FVector Start, FVector End, FRotator Direction) const;
 };

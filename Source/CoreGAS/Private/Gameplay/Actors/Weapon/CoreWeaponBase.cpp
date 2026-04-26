@@ -14,6 +14,11 @@ ACoreWeaponBase::ACoreWeaponBase()
 	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
+UCoreTraceConfig* ACoreWeaponBase::GetTraceConfig() const
+{
+	return TraceConfig;
+}
+
 FVector ACoreWeaponBase::GetTraceStart() const
 {
 	if (WeaponMesh && WeaponMesh->DoesSocketExist(TraceStartSocket))

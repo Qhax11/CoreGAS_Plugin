@@ -24,6 +24,7 @@ public:
 	static UCoreAbilityTask_PerformTrace* PerformTraceInstant(
 		UGameplayAbility* OwningAbility,
 		UCoreTraceConfig* Config,
+		AActor* WeaponActor,
 		FVector CustomStart = FVector::ZeroVector,
 		FVector CustomEnd = FVector::ZeroVector);
 
@@ -33,6 +34,7 @@ public:
 		UGameplayAbility* OwningAbility,
 		UCoreTraceConfig* Config,
 		float Duration,
+		AActor* WeaponActor,
 		FVector CustomStart = FVector::ZeroVector,
 		FVector CustomEnd = FVector::ZeroVector);
 
@@ -43,6 +45,9 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<UCoreTraceConfig> TraceConfig;
+
+	UPROPERTY()
+	TObjectPtr<AActor> CachedWeaponActor;
 
 	FVector CachedCustomStart;
 	FVector CachedCustomEnd;

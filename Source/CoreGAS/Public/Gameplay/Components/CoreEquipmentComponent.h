@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
 #include "CoreEquipmentComponent.generated.h"
 
 class ACoreWeaponBase;
@@ -20,16 +21,16 @@ public:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Equipment")
-	void EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName SocketName);
+	void EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName AttachSocket, FGameplayTag SlotTag);
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Equipment")
-	void EquipWeapon(ACoreWeaponBase* Weapon, FName SocketName);
+	void EquipWeapon(ACoreWeaponBase* Weapon, FName AttachSocket, FGameplayTag SlotTag);
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Equipment")
-	void UnequipWeapon(FName SocketName);
+	void UnequipWeapon(FGameplayTag SlotTag);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS|Equipment")
-	ACoreWeaponBase* GetWeaponAtSlot(FName SocketName) const;
+	ACoreWeaponBase* GetWeaponBySlotTag(FGameplayTag SlotTag) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS|Equipment")
 	ACoreWeaponBase* GetFirstWeapon() const;
@@ -39,5 +40,5 @@ protected:
 	TObjectPtr<UCoreEquipmentData> EquipmentData;
 
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category = "CoreGAS|Equipment")
-	TMap<FName, TObjectPtr<ACoreWeaponBase>> EquippedWeapons;
+	TMap<FGameplayTag, TObjectPtr<ACoreWeaponBase>> EquippedWeapons;
 };
