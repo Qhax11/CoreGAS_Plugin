@@ -2,6 +2,7 @@
 
 #include "Gameplay/Characters/CoreCharacterBase.h"
 #include "Gameplay/Components/CoreASCBase.h"
+#include "Gameplay/Components/CoreEquipmentComponent.h"
 
 ACoreCharacterBase::ACoreCharacterBase()
 {
@@ -9,6 +10,8 @@ ACoreCharacterBase::ACoreCharacterBase()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UCoreASCBase>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(false);
+
+	EquipmentComponent = CreateDefaultSubobject<UCoreEquipmentComponent>(TEXT("EquipmentComponent"));
 }
 
 UAbilitySystemComponent* ACoreCharacterBase::GetAbilitySystemComponent() const

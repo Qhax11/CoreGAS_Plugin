@@ -8,6 +8,8 @@
 #include "Gameplay/Interfaces/CoreAbilitySystemInterface.h"
 #include "CoreCharacterBase.generated.h"
 
+class UCoreEquipmentComponent;
+
 UCLASS()
 class COREGAS_API ACoreCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICoreAbilitySystemInterface
 {
@@ -25,4 +27,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<class UCoreASCBase> AbilitySystemComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
+	TObjectPtr<UCoreEquipmentComponent> EquipmentComponent;
 };

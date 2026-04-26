@@ -5,28 +5,33 @@
 
 ACoreWeaponBase::ACoreWeaponBase()
 {
+	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = false;
+
 	WeaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 	SetRootComponent(WeaponMesh);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCollisionResponseToAllChannels(ECR_Ignore);
 }
 
 FVector ACoreWeaponBase::GetTraceStart() const
 {
-	if (WeaponMesh->DoesSocketExist(TraceStartSocket))
+	if (WeaponMesh && WeaponMesh->DoesSocketExist(TraceStartSocket))
 	{
 		return WeaponMesh->GetSocketLocation(TraceStartSocket);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ACoreWeaponBase::GetTraceStart - Socket '%s' not found on WeaponMesh. Falling back to actor location."), *TraceStartSocket.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ACoreWeaponBase::GetTraceStart - Socket '%s' not found on WeaponMesh"), *TraceStartSocket.ToString());
 	return GetActorLocation();
 }
 
 FVector ACoreWeaponBase::GetTraceEnd() const
 {
-	if (WeaponMesh->DoesSocketExist(TraceEndSocket))
+	if (WeaponMesh && WeaponMesh->DoesSocketExist(TraceEndSocket))
 	{
 		return WeaponMesh->GetSocketLocation(TraceEndSocket);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("ACoreWeaponBase::GetTraceEnd - Socket '%s' not found on WeaponMesh. Falling back to actor location."), *TraceEndSocket.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("ACoreWeaponBase::GetTraceEnd - Socket '%s' not found on WeaponMesh"), *TraceEndSocket.ToString());
 	return GetActorLocation();
 }
