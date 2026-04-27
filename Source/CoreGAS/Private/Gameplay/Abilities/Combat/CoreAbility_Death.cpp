@@ -21,3 +21,13 @@ void UCoreAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(CoreGAS::Character::TAG_Status_Dead);
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
+
+void UCoreAbility_Death::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	if (AActor* Avatar = ActorInfo->AvatarActor.Get())
+	{
+		Avatar->SetLifeSpan(0.1f);
+	}
+}

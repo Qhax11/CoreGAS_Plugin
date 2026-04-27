@@ -68,6 +68,10 @@ void UCoreGameplayAbility_Montage::OnMontageBlendOut(FGameplayTag EventTag, FGam
 
 void UCoreGameplayAbility_Montage::OnMontageCompleted(FGameplayTag EventTag, FGameplayEventData EventData)
 {
+	if (BlendOutDelayTask)
+	{
+		return;
+	}
 	HandleMontageEvent(false);
 }
 
