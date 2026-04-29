@@ -29,11 +29,14 @@ void UCoreAbility_Melee::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (TraceTask)
+	for (auto& [SlotTag, Task] : TraceTasks)
 	{
-		TraceTask->EndTask();
-		TraceTask = nullptr;
+		if (Task)
+		{
+			Task->EndTask();
+		}
 	}
+	TraceTasks.Empty();
 	HitActors.Empty();
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -74,16 +77,20 @@ void UCoreAbility_Melee::OnEventReceived(FGameplayTag EventTag, FGameplayEventDa
 			return;
 		}
 
-		TraceTask = UCoreAbilityTask_PerformTrace::PerformTraceTick(this, Weapon->GetTraceConfig(), MAX_FLT, Weapon);
-		TraceTask->OnHit.AddDynamic(this, &UCoreAbility_Melee::OnTraceHit);
-		TraceTask->ReadyForActivation();
+		UCoreAbilityTask_PerformTrace* NewTask = UCoreAbilityTask_PerformTrace::PerformTraceTick(this, Weapon->GetTraceConfig(), MAX_FLT, Weapon);
+		TraceTasks.Add(SlotTag, NewTask);
+		NewTask->OnHit.AddDynamic(this, &UCoreAbility_Melee::OnTraceHit);
+		NewTask->ReadyForActivation();
 	}
 	else if (bIsTraceEnd)
 	{
-		if (TraceTask)
+		if (TObjectPtr<UCoreAbilityTask_PerformTrace>* Found = TraceTasks.Find(SlotTag))
 		{
-			TraceTask->EndTask();
-			TraceTask = nullptr;
+			if (*Found)
+			{
+				(*Found)->EndTask();
+			}
+			TraceTasks.Remove(SlotTag);
 		}
 	}
 }

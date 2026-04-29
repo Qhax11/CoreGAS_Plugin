@@ -51,6 +51,9 @@ private:
 
 	FVector CachedCustomStart;
 	FVector CachedCustomEnd;
+	FVector PreviousStartLocation;
+	FVector PreviousEndLocation;
+	bool bHasPreviousLocations = false;
 	bool bInstantMode = true;
 	float Duration = 0.f;
 	float ElapsedTime = 0.f;

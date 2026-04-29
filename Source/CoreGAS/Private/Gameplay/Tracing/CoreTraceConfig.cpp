@@ -112,6 +112,20 @@ void UCoreTraceConfig::DrawDebugTrace(UWorld* World, FVector Start, FVector End,
 	DrawDebugPoint(World, End, 10.f, FColor::Red, false, DebugDuration);
 }
 
+TArray<FHitResult> UCoreTraceConfig::TraceSegment(UWorld* World, FVector From, FVector To, const FCollisionShape& Shape, const FCollisionQueryParams& QueryParams) const
+{
+	TArray<FHitResult> HitResults;
+	if (Shape.IsLine())
+	{
+		World->LineTraceMultiByChannel(HitResults, From, To, TraceChannel, QueryParams);
+	}
+	else
+	{
+		World->SweepMultiByChannel(HitResults, From, To, (To - From).Rotation().Quaternion(), TraceChannel, Shape, QueryParams);
+	}
+	return HitResults;
+}
+
 TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd, AActor* Instigator) const
 {
 	if (!Owner)
@@ -158,17 +172,64 @@ TArray<FHitResult> UCoreTraceConfig::Execute(AActor* Owner, FVector CustomStart,
 	}
 	else
 	{
-		if (CollisionShape.IsLine())
-		{
-			World->LineTraceMultiByChannel(HitResults, Start, End, TraceChannel, QueryParams);
-		}
-		else
-		{
-			World->SweepMultiByChannel(HitResults, Start, End, Direction.Quaternion(), TraceChannel, CollisionShape, QueryParams);
-		}
+		HitResults = TraceSegment(World, Start, End, CollisionShape, QueryParams);
 	}
 
 	DrawDebugTrace(World, Start, End, Direction);
 
 	return HitResults;
+}
+
+TArray<FHitResult> UCoreTraceConfig::ExecuteSweepBetweenFrames(AActor* Owner, FVector PreviousStart, FVector PreviousEnd, FVector CurrentStart, FVector CurrentEnd, AActor* Instigator) const
+{
+	if (!Owner)
+	{
+		return {};
+	}
+
+	UWorld* World = Owner->GetWorld();
+	if (!World)
+	{
+		return {};
+	}
+
+	const FCollisionShape CollisionShape = BuildCollisionShape();
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.bTraceComplex = false;
+	if (bIgnoreInstigator && Instigator)
+	{
+		QueryParams.AddIgnoredActor(Instigator);
+	}
+
+	TArray<FHitResult> StartSweepHits = TraceSegment(World, PreviousStart, CurrentStart, CollisionShape, QueryParams);
+	TArray<FHitResult> EndSweepHits = TraceSegment(World, PreviousEnd, CurrentEnd, CollisionShape, QueryParams);
+
+	TSet<AActor*> SeenActors;
+	TArray<FHitResult> MergedHits;
+
+	for (const FHitResult& Hit : StartSweepHits)
+	{
+		AActor* HitActor = Hit.GetActor();
+		if (!SeenActors.Contains(HitActor))
+		{
+			MergedHits.Add(Hit);
+			SeenActors.Add(HitActor);
+		}
+	}
+
+	for (const FHitResult& Hit : EndSweepHits)
+	{
+		AActor* HitActor = Hit.GetActor();
+		if (!SeenActors.Contains(HitActor))
+		{
+			MergedHits.Add(Hit);
+			SeenActors.Add(HitActor);
+		}
+	}
+
+	DrawDebugTrace(World, PreviousStart, CurrentStart, (CurrentStart - PreviousStart).Rotation());
+	DrawDebugTrace(World, PreviousEnd, CurrentEnd, (CurrentEnd - PreviousEnd).Rotation());
+
+	return MergedHits;
 }

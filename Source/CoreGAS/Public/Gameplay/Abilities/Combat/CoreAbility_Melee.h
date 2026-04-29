@@ -33,7 +33,7 @@ protected:
 
 private:
 	UPROPERTY()
-	TObjectPtr<UCoreAbilityTask_PerformTrace> TraceTask;
+	TMap<FGameplayTag, TObjectPtr<UCoreAbilityTask_PerformTrace>> TraceTasks;
 
 	TSet<TWeakObjectPtr<AActor>> HitActors;
 

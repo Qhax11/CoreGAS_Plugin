@@ -62,6 +62,7 @@ void UCoreAbilityTask_PerformTrace::TickTask(float DeltaTime)
 
 void UCoreAbilityTask_PerformTrace::OnDestroy(bool AbilityEnded)
 {
+	bHasPreviousLocations = false;
 	Super::OnDestroy(AbilityEnded);
 }
 
@@ -79,7 +80,22 @@ void UCoreAbilityTask_PerformTrace::PerformTrace()
 	}
 
 	AActor* TraceOwner = CachedWeaponActor ? CachedWeaponActor.Get() : AvatarActor;
-	TArray<FHitResult> HitResults = TraceConfig->Execute(TraceOwner, CachedCustomStart, CachedCustomEnd, AvatarActor);
+	const FVector CurrentStart = TraceConfig->GetStartLocation(TraceOwner, CachedCustomStart);
+	const FVector CurrentEnd = TraceConfig->GetEndLocation(TraceOwner, CachedCustomEnd, CurrentStart);
+
+	TArray<FHitResult> HitResults;
+	if (bHasPreviousLocations)
+	{
+		HitResults = TraceConfig->ExecuteSweepBetweenFrames(TraceOwner, PreviousStartLocation, PreviousEndLocation, CurrentStart, CurrentEnd, AvatarActor);
+	}
+	else
+	{
+		HitResults = TraceConfig->Execute(TraceOwner, CachedCustomStart, CachedCustomEnd, AvatarActor);
+	}
+
+	PreviousStartLocation = CurrentStart;
+	PreviousEndLocation = CurrentEnd;
+	bHasPreviousLocations = true;
 
 	if (HitResults.Num() > 0 && ShouldBroadcastAbilityTaskDelegates())
 	{

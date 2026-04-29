@@ -86,10 +86,13 @@ public:
 	float DebugDuration = 1.f;
 
 	TArray<FHitResult> Execute(AActor* Owner, FVector CustomStart, FVector CustomEnd, AActor* Instigator = nullptr) const;
+	TArray<FHitResult> ExecuteSweepBetweenFrames(AActor* Owner, FVector PreviousStart, FVector PreviousEnd, FVector CurrentStart, FVector CurrentEnd, AActor* Instigator = nullptr) const;
 
-private:
 	FVector GetStartLocation(AActor* Owner, FVector CustomStart) const;
 	FVector GetEndLocation(AActor* Owner, FVector CustomEnd, FVector ResolvedStart) const;
+
+private:
 	FCollisionShape BuildCollisionShape() const;
 	void DrawDebugTrace(UWorld* World, FVector Start, FVector End, FRotator Direction) const;
+	TArray<FHitResult> TraceSegment(UWorld* World, FVector From, FVector To, const FCollisionShape& Shape, const FCollisionQueryParams& QueryParams) const;
 };
