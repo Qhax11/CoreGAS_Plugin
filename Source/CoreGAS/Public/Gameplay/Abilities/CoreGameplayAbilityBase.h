@@ -18,4 +18,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Ability")
 	FGameplayTag AbilityInputTag;
+
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "Ability|Commit")
+	bool bCommitCooldownOnActivate = true;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Ability|Commit")
+	bool bCommitCostOnActivate = true;
 };
