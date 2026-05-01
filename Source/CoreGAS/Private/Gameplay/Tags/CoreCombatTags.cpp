@@ -26,6 +26,9 @@ namespace CoreGAS::Combat
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd_RightHand,   "CoreGAS.Event.Melee.TraceEnd.RightHand")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd_LeftHand,    "CoreGAS.Event.Melee.TraceEnd.LeftHand")
 
+	// Range event tags
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Range_Projectile_Spawn, "CoreGAS.Event.Range.Projectile.Spawn")
+
 	// Death event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Death, "CoreGAS.Event.Death")
 }

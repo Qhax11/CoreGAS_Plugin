@@ -14,6 +14,8 @@
 // Collision Object Channels - must match DefaultEngine.ini channel assignments
 #define ECC_Hero    ECC_GameTraceChannel1
 #define ECC_Enemy   ECC_GameTraceChannel2
+#define ECC_Projectile  ECC_GameTraceChannel4
+
 
 // Collision Trace Channels
 #define ECC_Damage  ECC_GameTraceChannel3
