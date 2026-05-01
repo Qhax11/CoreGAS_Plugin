@@ -3,6 +3,7 @@
 #include "Gameplay/Characters/CoreCharacterBase.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Components/CoreEquipmentComponent.h"
+#include "MotionWarpingComponent.h"
 
 ACoreCharacterBase::ACoreCharacterBase()
 {
@@ -12,6 +13,7 @@ ACoreCharacterBase::ACoreCharacterBase()
 	AbilitySystemComponent->SetIsReplicated(false);
 
 	EquipmentComponent = CreateDefaultSubobject<UCoreEquipmentComponent>(TEXT("EquipmentComponent"));
+	MotionWarpingComponent = CreateDefaultSubobject<UMotionWarpingComponent>(TEXT("MotionWarpingComponent"));
 }
 
 UAbilitySystemComponent* ACoreCharacterBase::GetAbilitySystemComponent() const

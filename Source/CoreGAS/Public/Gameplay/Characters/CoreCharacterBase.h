@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Gameplay/Interfaces/CoreAbilitySystemInterface.h"
+#include "MotionWarpingComponent.h"
 #include "CoreCharacterBase.generated.h"
 
 class UCoreEquipmentComponent;
@@ -30,4 +31,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreEquipmentComponent> EquipmentComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS")
+	TObjectPtr<UMotionWarpingComponent> MotionWarpingComponent;
 };

@@ -31,7 +31,8 @@ public class CoreGAS : ModuleRules
 				"EnhancedInput",
                 "GameplayAbilities",
                 "GameplayTags",
-                "GameplayTasks"
+                "GameplayTasks",
+                "MotionWarping"
             }
 			);
 
