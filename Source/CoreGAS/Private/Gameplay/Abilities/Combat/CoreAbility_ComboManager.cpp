@@ -1,11 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/Abilities/Combat/CoreAbility_ComboManager.h"
+#include "Gameplay/Tags/CoreAbilityTags.h"
 #include "AbilitySystemComponent.h"
 
 UCoreAbility_ComboManager::UCoreAbility_ComboManager()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
+	ActivationBlockedTags.AddTag(CoreGAS::Ability::TAG_Ability_Phase_Active);
 }
 
 void UCoreAbility_ComboManager::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
