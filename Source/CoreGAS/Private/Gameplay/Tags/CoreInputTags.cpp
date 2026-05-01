@@ -4,13 +4,12 @@
 
 namespace CoreGAS::Input
 {
-	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Attack, "CoreGAS.Input.Attack")
-	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Jump,   "CoreGAS.Input.Jump")
-	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Dodge,  "CoreGAS.Input.Dodge")
-
-	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Num_1, "CoreGAS.Input.Num.1")
-	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Num_2, "CoreGAS.Input.Num.2")
-    UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Num_3, "CoreGAS.Input.Num.3")
-    UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Num_4, "CoreGAS.Input.Num.4")
-    UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Num_5, "CoreGAS.Input.Num.5")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_LightAttack, "CoreGAS.Input.Combat.LightAttack")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_Skill_1,     "CoreGAS.Input.Combat.Skill.1")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_Skill_2,     "CoreGAS.Input.Combat.Skill.2")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_Skill_3,     "CoreGAS.Input.Combat.Skill.3")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_Skill_4,     "CoreGAS.Input.Combat.Skill.4")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Combat_Skill_5,     "CoreGAS.Input.Combat.Skill.5")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Movement_Jump,      "CoreGAS.Input.Movement.Jump")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Input_Movement_Roll,      "CoreGAS.Input.Movement.Roll")
 }
