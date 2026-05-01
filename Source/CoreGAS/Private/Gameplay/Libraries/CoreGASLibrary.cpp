@@ -3,6 +3,7 @@
 #include "Gameplay/Libraries/CoreGASLibrary.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "AttributeSet.h"
+#include "AbilitySystemComponent.h"
 #include "Gameplay/Data/CoreCharacterData.h"
 #include "Gameplay/Abilities/CoreGameplayAbilityBase.h"
 #include "GameplayEffect.h"
@@ -59,4 +60,53 @@ void UCoreGASLibrary::ApplyCharacterData(UCoreASCBase* ASC, UAttributeSet* Attri
 	{
 		ASC->AddLooseGameplayTags(Data->PermanentTags);
 	}
+}
+
+bool UCoreGASLibrary::GetCooldownRemainingAndDurationByContainer(
+	UAbilitySystemComponent* ASC,
+	FGameplayTagContainer CooldownTags,
+	float& OutTimeRemaining,
+	float& OutDuration)
+{
+	if (!ASC || !CooldownTags.IsValid())
+	{
+		OutTimeRemaining = 0.f;
+		OutDuration = 0.f;
+		return false;
+	}
+
+	OutTimeRemaining = 0.f;
+	OutDuration = 0.f;
+
+	FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAnyOwningTags(CooldownTags);
+	TArray<TPair<float, float>> RemainingAndDurations = ASC->GetActiveEffectsTimeRemainingAndDuration(Query);
+
+	for (const TPair<float, float>& Pair : RemainingAndDurations)
+	{
+		if (Pair.Key > OutTimeRemaining)
+		{
+			OutTimeRemaining = Pair.Key;
+			OutDuration = Pair.Value;
+		}
+	}
+
+	return OutTimeRemaining > 0.f;
+}
+
+bool UCoreGASLibrary::GetCooldownRemainingAndDurationByTag(
+	UAbilitySystemComponent* ASC,
+	FGameplayTag CooldownTag,
+	float& OutTimeRemaining,
+	float& OutDuration)
+{
+	if (!ASC || !CooldownTag.IsValid())
+	{
+		OutTimeRemaining = 0.f;
+		OutDuration = 0.f;
+		return false;
+	}
+
+	FGameplayTagContainer TagContainer;
+	TagContainer.AddTag(CooldownTag);
+	return GetCooldownRemainingAndDurationByContainer(ASC, TagContainer, OutTimeRemaining, OutDuration);
 }

@@ -4,11 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "GameplayTagContainer.h"
 #include "CoreGASLibrary.generated.h"
 
 class UCoreASCBase;
 class UAttributeSet;
 class UCoreCharacterData;
+class UAbilitySystemComponent;
 
 UCLASS()
 class COREGAS_API UCoreGASLibrary : public UBlueprintFunctionLibrary
@@ -20,4 +22,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS")
 	static UCoreASCBase* GetCoreASCFromActor(AActor* Actor);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS|Cooldown")
+	static bool GetCooldownRemainingAndDurationByContainer(
+		UAbilitySystemComponent* ASC,
+		FGameplayTagContainer CooldownTags,
+		float& OutTimeRemaining,
+		float& OutDuration);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS|Cooldown")
+	static bool GetCooldownRemainingAndDurationByTag(
+		UAbilitySystemComponent* ASC,
+		FGameplayTag CooldownTag,
+		float& OutTimeRemaining,
+		float& OutDuration);
 };
