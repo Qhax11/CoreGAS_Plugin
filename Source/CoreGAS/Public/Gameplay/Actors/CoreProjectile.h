@@ -31,6 +31,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Projectile")
 	FGameplayTagContainer TargetTags;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "CoreGAS|Projectile")
+	void BP_OnImpact(const FHitResult& HitResult, bool bHitTarget);
+
 protected:
 	UFUNCTION()
 	void OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

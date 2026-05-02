@@ -16,7 +16,10 @@ ACoreProjectile::ACoreProjectile()
 	CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	CollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Hero, ECR_Overlap);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_Enemy, ECR_Overlap);
 	CollisionComponent->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Overlap);
+	CollisionComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Overlap);
 	CollisionComponent->SetGenerateOverlapEvents(true);
 	RootComponent = CollisionComponent;
 
@@ -44,6 +47,7 @@ void ACoreProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedCompone
 	UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor);
 	if (!ASC)
 	{
+		BP_OnImpact(SweepResult, false);
 		Destroy();
 		return;
 	}
@@ -58,5 +62,6 @@ void ACoreProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedCompone
 		ASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
 	}
 
+	BP_OnImpact(SweepResult, true);
 	Destroy();
 }
