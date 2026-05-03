@@ -6,12 +6,61 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
 #include "Gameplay/Tags/CoreAttributeTags.h"
 
 UCoreAttributeSetBase::UCoreAttributeSetBase()
 {
 
+}
+
+void UCoreAttributeSetBase::InitFromMetaDataTable(const UDataTable* DataTable)
+{
+	Super::InitFromMetaDataTable(DataTable);
+
+	UCoreASCBase* ASC = Cast<UCoreASCBase>(GetOwningAbilitySystemComponent());
+	if (!ASC)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("UCoreAttributeSetBase::InitFromMetaDataTable: Failed to cast ASC to UCoreASCBase"));
+		return;
+	}
+
+	ASC->OnGASDataInitialized.AddDynamic(this, &UCoreAttributeSetBase::InitializeAttributes);
+}
+
+void UCoreAttributeSetBase::InitializeAttributes()
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	if (!ASC)
+	{
+		return;
+	}
+
+	if (GetHealth() >= GetMaxHealth())
+	{
+		ASC->AddLooseGameplayTag(CoreGAS::Attribute::TAG_Attribute_Health_Full);
+		ASC->RemoveLooseGameplayTag(CoreGAS::Attribute::TAG_Attribute_Health_Empty, 1);
+	}
+	else
+	{
+		ASC->RemoveLooseGameplayTag(CoreGAS::Attribute::TAG_Attribute_Health_Full, 1);
+	}
+
+	if (ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwningActor()))
+	{
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GetMovementSpeed();
+	}
+}
+
+void UCoreAttributeSetBase::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetMovementSpeedAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.0f);
+	}
 }
 
 void UCoreAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
