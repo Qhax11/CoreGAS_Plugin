@@ -80,6 +80,16 @@ void UCoreAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCa
 				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, CoreGAS::Combat::TAG_Event_Death, EventData);
 			}
 		}
+		else
+		{
+			if (AActor* OwnerActor = GetOwningActor())
+			{
+				FGameplayEventData EventData;
+				EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+				EventData.EventMagnitude = Data.EvaluatedData.Magnitude;
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, CoreGAS::Combat::TAG_Event_HitReaction, EventData);
+			}
+		}
 
 		if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
 		{

@@ -34,4 +34,5 @@ namespace CoreGAS::Combat
 
 	// Death event tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Death)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_HitReaction)
 }
