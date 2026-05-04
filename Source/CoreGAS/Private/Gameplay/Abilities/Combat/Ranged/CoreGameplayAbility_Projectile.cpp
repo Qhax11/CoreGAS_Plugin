@@ -74,13 +74,17 @@ void UCoreGameplayAbility_Projectile::SpawnProjectile(const FVector& SpawnLocati
 
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Instigator = AvatarActor ? Cast<APawn>(AvatarActor) : nullptr;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ACoreProjectile* Projectile = World->SpawnActorDeferred<ACoreProjectile>(
+		ProjectileClass,
+		FTransform(SpawnRotation, SpawnLocation),
+		AvatarActor,
+		Cast<APawn>(AvatarActor),
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn
+	);
 
-	ACoreProjectile* Projectile = World->SpawnActor<ACoreProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
 	if (Projectile)
 	{
 		Projectile->DamageSpecHandle = SpecHandle;
+		Projectile->FinishSpawning(FTransform(SpawnRotation, SpawnLocation));
 	}
 }
