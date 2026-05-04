@@ -4,21 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "Gameplay/Abilities/CoreGameplayAbilityBase.h"
-#include "CoreAbility_ComboManager.generated.h"
+#include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_ComboMeleeAttack.h"
+#include "CoreGameplayAbility_ComboManager.generated.h"
 
 UCLASS()
-class COREGAS_API UCoreAbility_ComboManager : public UCoreGameplayAbilityBase
+class COREGAS_API UCoreGameplayAbility_ComboManager : public UCoreGameplayAbilityBase
 {
 	GENERATED_BODY()
 
 public:
-	UCoreAbility_ComboManager();
+	UCoreGameplayAbility_ComboManager();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Combo")
-	TArray<TSubclassOf<UCoreGameplayAbilityBase>> ComboAbilities;
+	TArray<TSubclassOf<UCoreGameplayAbility_ComboMeleeAttack>> ComboAbilities;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Combo")
 	float ComboResetTime = 1.5f;

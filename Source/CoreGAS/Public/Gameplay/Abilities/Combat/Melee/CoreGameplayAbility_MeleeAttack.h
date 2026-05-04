@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Gameplay/Abilities/CoreGameplayAbility_Montage.h"
-#include "CoreAbility_Melee.generated.h"
+#include "CoreGameplayAbility_MeleeAttack.generated.h"
 
 class UCoreAbilityTask_PerformTrace;
 class UCoreEquipmentComponent;
@@ -12,12 +12,12 @@ class ACoreWeaponBase;
 class UGameplayEffect;
 
 UCLASS()
-class COREGAS_API UCoreAbility_Melee : public UCoreGameplayAbility_Montage
+class COREGAS_API UCoreGameplayAbility_MeleeAttack : public UCoreGameplayAbility_Montage
 {
 	GENERATED_BODY()
 
 public:
-	UCoreAbility_Melee();
+	UCoreGameplayAbility_MeleeAttack();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;

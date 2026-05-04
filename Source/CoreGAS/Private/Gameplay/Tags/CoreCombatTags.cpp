@@ -18,6 +18,9 @@ namespace CoreGAS::Combat
 	UE_DEFINE_GAMEPLAY_TAG(TAG_SetByCaller_DamageAmount, "CoreGAS.SetByCaller.DamageAmount")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_SetByCaller_HealAmount,   "CoreGAS.SetByCaller.HealAmount")
 
+	// State tags
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Combo_Active, "CoreGAS.State.Combo.Active")
+
 	// Melee event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceBegin, "CoreGAS.Event.Melee.TraceBegin")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceEnd,   "CoreGAS.Event.Melee.TraceEnd")

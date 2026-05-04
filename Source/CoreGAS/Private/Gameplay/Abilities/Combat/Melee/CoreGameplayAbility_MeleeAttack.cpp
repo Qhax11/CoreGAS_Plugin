@@ -1,6 +1,6 @@
 // Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
 
-#include "Gameplay/Abilities/Combat/CoreAbility_Melee.h"
+#include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAttack.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_PerformTrace.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
 #include "Gameplay/Tags/CoreEquipmentTags.h"
@@ -9,12 +9,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 
-UCoreAbility_Melee::UCoreAbility_Melee()
+UCoreGameplayAbility_MeleeAttack::UCoreGameplayAbility_MeleeAttack()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerExecution;
 }
 
-void UCoreAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
+void UCoreGameplayAbility_MeleeAttack::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	const FGameplayEventData* TriggerEventData)
 {
@@ -25,7 +25,7 @@ void UCoreAbility_Melee::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UCoreAbility_Melee::EndAbility(const FGameplayAbilitySpecHandle Handle,
+void UCoreGameplayAbility_MeleeAttack::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
 	bool bReplicateEndAbility, bool bWasCancelled)
 {
@@ -41,7 +41,7 @@ void UCoreAbility_Melee::EndAbility(const FGameplayAbilitySpecHandle Handle,
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UCoreAbility_Melee::OnEventReceived(FGameplayTag EventTag, FGameplayEventData EventData)
+void UCoreGameplayAbility_MeleeAttack::OnEventReceived(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	const bool bIsTraceBegin = EventTag == CoreGAS::Combat::TAG_Event_Melee_TraceBegin_RightHand
 		|| EventTag == CoreGAS::Combat::TAG_Event_Melee_TraceBegin_LeftHand;
@@ -60,26 +60,26 @@ void UCoreAbility_Melee::OnEventReceived(FGameplayTag EventTag, FGameplayEventDa
 		UCoreEquipmentComponent* EquipmentComponent = AvatarActor ? AvatarActor->FindComponentByClass<UCoreEquipmentComponent>() : nullptr;
 		if (!EquipmentComponent)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UCoreAbility_Melee::OnEventReceived - No UCoreEquipmentComponent on avatar actor"));
+			UE_LOG(LogTemp, Warning, TEXT("UCoreGameplayAbility_MeleeAttack::OnEventReceived - No UCoreEquipmentComponent on avatar actor"));
 			return;
 		}
 
 		ACoreWeaponBase* Weapon = EquipmentComponent->GetWeaponBySlotTag(SlotTag);
 		if (!Weapon)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UCoreAbility_Melee::OnEventReceived - No weapon in slot '%s'"), *SlotTag.ToString());
+			UE_LOG(LogTemp, Warning, TEXT("UCoreGameplayAbility_MeleeAttack::OnEventReceived - No weapon in slot '%s'"), *SlotTag.ToString());
 			return;
 		}
 
 		if (!Weapon->GetTraceConfig())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("UCoreAbility_Melee::OnEventReceived - Weapon in slot '%s' has no TraceConfig"), *SlotTag.ToString());
+			UE_LOG(LogTemp, Warning, TEXT("UCoreGameplayAbility_MeleeAttack::OnEventReceived - Weapon in slot '%s' has no TraceConfig"), *SlotTag.ToString());
 			return;
 		}
 
 		UCoreAbilityTask_PerformTrace* NewTask = UCoreAbilityTask_PerformTrace::PerformTraceTick(this, Weapon->GetTraceConfig(), MAX_FLT, Weapon);
 		TraceTasks.Add(SlotTag, NewTask);
-		NewTask->OnHit.AddDynamic(this, &UCoreAbility_Melee::OnTraceHit);
+		NewTask->OnHit.AddDynamic(this, &UCoreGameplayAbility_MeleeAttack::OnTraceHit);
 		NewTask->ReadyForActivation();
 	}
 	else if (bIsTraceEnd)
@@ -95,7 +95,7 @@ void UCoreAbility_Melee::OnEventReceived(FGameplayTag EventTag, FGameplayEventDa
 	}
 }
 
-void UCoreAbility_Melee::OnTraceHit(const TArray<FHitResult>& HitResults)
+void UCoreGameplayAbility_MeleeAttack::OnTraceHit(const TArray<FHitResult>& HitResults)
 {
 	if (HitEffects.IsEmpty())
 	{

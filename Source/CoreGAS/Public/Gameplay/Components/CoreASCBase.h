@@ -31,4 +31,21 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = "CoreGAS")
 	FOnGASDataInitialized OnGASDataInitialized;
+
+	FDelegateHandle ListenForAbilityEndedByHandle(FGameplayAbilitySpecHandle SpecHandle, TFunction<void(const FAbilityEndedData&)> Callback);
+	bool ActivateAbilityByClassAndReturnHandle(TSubclassOf<UGameplayAbility> AbilityClass, FGameplayAbilitySpecHandle& OutHandle);
+	void StopListeningForAbilityEnded(FDelegateHandle Handle);
+
+private:
+	struct FCoreAbilityEndListener
+	{
+		FGameplayAbilitySpecHandle WatchedHandle;
+		TFunction<void(const FAbilityEndedData&)> Callback;
+		FDelegateHandle DelegateHandle;
+	};
+
+	TArray<FCoreAbilityEndListener> ActiveEndListeners;
+	FDelegateHandle MasterAbilityEndedHandle;
+
+	void OnAnyAbilityEnded(const FAbilityEndedData& Data);
 };
