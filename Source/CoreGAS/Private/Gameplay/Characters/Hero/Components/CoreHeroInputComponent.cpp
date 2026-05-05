@@ -32,4 +32,5 @@ void UCoreHeroInputComponent::BindAbilityInput(UInputAction* Action, const FGame
 	UEnhancedInputComponent* EIC = CastChecked<UEnhancedInputComponent>(CachedInputComponent);
 	EIC->BindAction(Action, ETriggerEvent::Started,   CachedASC.Get(), &UCoreASCBase::AbilityInputTagPressed,  InputTag);
 	EIC->BindAction(Action, ETriggerEvent::Completed, CachedASC.Get(), &UCoreASCBase::AbilityInputTagReleased, InputTag);
+	EIC->BindAction(Action, ETriggerEvent::Canceled, CachedASC.Get(), &UCoreASCBase::AbilityInputTagReleased, InputTag);
 }

@@ -20,7 +20,7 @@ struct FCoreAbilityInputBinding
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<UInputAction> InputAction;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Meta = (Categories = "CoreGAS.Input"))
 	FGameplayTag InputTag;
 };
 

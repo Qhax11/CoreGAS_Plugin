@@ -31,16 +31,15 @@ void UCoreASCBase::AbilityInputTagPressed(FGameplayTag InputTag)
 
 void UCoreASCBase::AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (!InputTag.IsValid())
-	{
-		return;
-	}
+	if (!InputTag.IsValid()) return;
 
 	FScopedAbilityListLock ActiveScopeLock(*this);
 	for (FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
 	{
 		if (Spec.Ability && Spec.GetDynamicSpecSourceTags().HasTagExact(InputTag))
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Released hit: tag=%s, IsActive=%d"),
+				*InputTag.ToString(), Spec.IsActive());
 			Spec.InputPressed = false;
 			if (Spec.IsActive())
 			{

@@ -16,7 +16,7 @@ class COREGAS_API UCoreGameplayAbilityBase : public UGameplayAbility
 public:
 	UCoreGameplayAbilityBase();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Ability")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Ability", Meta = (Categories = "CoreGAS.Input"))
 	FGameplayTag AbilityInputTag;
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
