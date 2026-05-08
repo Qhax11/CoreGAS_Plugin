@@ -1,4 +1,4 @@
-// Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
+﻿// Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
 
 #include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAttack.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_PerformTrace.h"
@@ -130,6 +130,9 @@ void UCoreGameplayAbility_MeleeAttack::OnTraceHit(const TArray<FHitResult>& HitR
 			}
 
 			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass, GetAbilityLevel());
+			FGameplayEffectContextHandle Context = SpecHandle.Data->GetContext();
+			Context.AddHitResult(Hit, true);  // true = override existing
+
 			if (SpecHandle.IsValid())
 			{
 				SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);

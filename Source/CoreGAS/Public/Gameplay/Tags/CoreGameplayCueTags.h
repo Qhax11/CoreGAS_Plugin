@@ -9,4 +9,7 @@ namespace CoreGAS::GameplayCue
 {
 	// HitReaction cue tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_GameplayCue_HitReaction_Flash)
+
+	// Impact cue tags
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_GameplayCue_Impact_Melee)
 }
