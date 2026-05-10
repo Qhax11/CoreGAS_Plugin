@@ -32,7 +32,8 @@ public class CoreGAS : ModuleRules
                 "GameplayAbilities",
                 "GameplayTags",
                 "GameplayTasks",
-                "MotionWarping"
+                "MotionWarping",
+                "AIModule"
             }
 			);
 

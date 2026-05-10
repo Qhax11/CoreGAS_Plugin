@@ -1,0 +1,25 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "Gameplay/AI/States/CoreStateBase.h"
+
+void UCoreStateBase::OnEnter(UCoreStateManager* StateManager)
+{
+}
+
+void UCoreStateBase::OnExit(UCoreStateManager* StateManager)
+{
+}
+
+void UCoreStateBase::OnTick(UCoreStateManager* StateManager, float DeltaTime)
+{
+}
+
+bool UCoreStateBase::EnterCondition(UCoreStateManager* StateManager) const
+{
+	return true;
+}
+
+void UCoreStateBase::BroadcastTransition(FGameplayTag TargetStateTag)
+{
+	OnStateTransitionRequested.Broadcast(TargetStateTag);
+}

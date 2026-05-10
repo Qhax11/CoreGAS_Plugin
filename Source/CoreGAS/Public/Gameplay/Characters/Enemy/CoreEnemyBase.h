@@ -8,6 +8,7 @@
 
 class UCoreEnemyGASDataComponent;
 class UCoreEnemyAttributeSet;
+class ACoreAIController;
 
 UCLASS()
 class COREGAS_API ACoreEnemyBase : public ACoreCharacterBase
