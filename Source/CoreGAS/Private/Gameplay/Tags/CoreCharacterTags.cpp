@@ -10,8 +10,9 @@ namespace CoreGAS::Character
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Status_Invincible, "CoreGAS.Status.Invincible")
 
 	// State tags
-	UE_DEFINE_GAMEPLAY_TAG(TAG_State_InCombat, "CoreGAS.State.InCombat")
-	UE_DEFINE_GAMEPLAY_TAG(TAG_State_InAir,    "CoreGAS.State.InAir")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_InCombat,  "CoreGAS.State.InCombat")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_InAir,     "CoreGAS.State.InAir")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Targeted,  "CoreGAS.State.Targeted")
 
 	// Entity tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Entity_Hero,  "CoreGAS.Entity.Hero")

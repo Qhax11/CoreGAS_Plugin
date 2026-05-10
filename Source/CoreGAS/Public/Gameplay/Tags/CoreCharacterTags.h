@@ -15,6 +15,7 @@ namespace CoreGAS::Character
 	// State tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_InCombat)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_InAir)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Targeted)
 
 	// Entity tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Entity_Hero)
