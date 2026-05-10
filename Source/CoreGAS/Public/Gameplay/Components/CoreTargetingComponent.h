@@ -26,6 +26,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Targeting")
 	bool bDrawDebug = false;
 
+	AActor* GetCurrentTarget() const { return CurrentTarget.Get(); }
+
 private:
 	void UpdateTarget();
 
