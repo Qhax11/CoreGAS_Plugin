@@ -3,12 +3,12 @@
 
 #include "Gameplay/Attributes/CoreAttributeSetBase.h"
 #include "GameplayEffectExtension.h"
-#include "AbilitySystemBlueprintLibrary.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Gameplay/Components/CoreASCBase.h"
-#include "Gameplay/Tags/CoreCombatTags.h"
 #include "Gameplay/Tags/CoreAttributeTags.h"
+#include "Gameplay/Tags/CoreCombatTags.h"
 
 UCoreAttributeSetBase::UCoreAttributeSetBase()
 {
@@ -69,27 +69,19 @@ void UCoreAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCa
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
-		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+		if (AActor* OwnerActor = GetOwningActor())
+		{
+			FGameplayEventData EventData;
+			EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
 
-		if (GetHealth() <= 0.f)
-		{
-			if (AActor* OwnerActor = GetOwningActor())
-			{
-				FGameplayEventData EventData;
-				EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, CoreGAS::Combat::TAG_Event_Death, EventData);
-			}
+			EventData.EventMagnitude = Data.EvaluatedData.Magnitude;
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, CoreGAS::Combat::TAG_Event_HitReaction, EventData);
 		}
-		else
-		{
-			if (AActor* OwnerActor = GetOwningActor())
-			{
-				FGameplayEventData EventData;
-				EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
-				EventData.EventMagnitude = Data.EvaluatedData.Magnitude;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, CoreGAS::Combat::TAG_Event_HitReaction, EventData);
-			}
-		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
 
 		if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
 		{

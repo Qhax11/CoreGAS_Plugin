@@ -7,6 +7,7 @@
 #include "CoreAIController.generated.h"
 
 class UCoreStateManager;
+class UCoreAIEventHandler;
 
 UCLASS()
 class COREGAS_API ACoreAIController : public AAIController
@@ -23,4 +24,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreStateManager> StateManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
+	TObjectPtr<UCoreAIEventHandler> EventHandler;
 };
