@@ -59,6 +59,16 @@ void UCoreTargetingComponent::UpdateTarget()
 		DrawDebugSphere(Owner->GetWorld(), OwnerLocation, TargetingRadius, 16, FColor::Green, false, TargetingInterval);
 	}
 
+	if (OverlappedActors.IsEmpty()) 
+	{
+		if (IsValid(CurrentTarget))
+		{
+			CurrentTarget = nullptr;
+		} 
+
+		return;
+	}
+
 	int32 SizeX, SizeY;
 	PC->GetViewportSize(SizeX, SizeY);
 	const FVector2D ScreenCenter(SizeX * 0.5f, SizeY * 0.5f);

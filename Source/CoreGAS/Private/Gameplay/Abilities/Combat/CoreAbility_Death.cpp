@@ -5,6 +5,7 @@
 #include "Gameplay/Tags/CoreCombatTags.h"
 #include "Gameplay/Tags/CoreCharacterTags.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UCoreAbility_Death::UCoreAbility_Death()
 {
@@ -19,6 +20,19 @@ UCoreAbility_Death::UCoreAbility_Death()
 void UCoreAbility_Death::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	GetAbilitySystemComponentFromActorInfo()->AddLooseGameplayTag(CoreGAS::Character::TAG_Status_Dead);
+
+	AActor* Avatar = ActorInfo->AvatarActor.Get();
+	if (Avatar)
+	{
+		Avatar->SetActorEnableCollision(false);
+
+		if (UCharacterMovementComponent* MovComp = Avatar->FindComponentByClass<UCharacterMovementComponent>())
+		{
+			MovComp->GravityScale = 0.f;
+			MovComp->Velocity     = FVector::ZeroVector;
+		}
+	}
+
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 

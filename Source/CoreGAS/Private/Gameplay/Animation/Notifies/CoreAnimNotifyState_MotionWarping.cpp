@@ -36,6 +36,15 @@ void UCoreAnimNotifyState_MotionWarping::NotifyBegin(USkeletalMeshComponent* Mes
 						WarpModifier->WarpTargetName, WarpLocation, LookAtRotation);
 				}
 			}
+			else
+			{
+				UMotionWarpingComponent* WarpComp = Owner->FindComponentByClass<UMotionWarpingComponent>();
+				URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
+				if (WarpComp && WarpModifier)
+				{
+					WarpComp->RemoveWarpTarget(WarpModifier->WarpTargetName);
+				}
+			}
 		}
 	}
 

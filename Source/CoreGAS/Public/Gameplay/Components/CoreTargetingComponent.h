@@ -31,6 +31,7 @@ public:
 private:
 	void UpdateTarget();
 
+	UPROPERTY()
 	TObjectPtr<AActor> CurrentTarget;
 	FTimerHandle TargetingTimerHandle;
 };
