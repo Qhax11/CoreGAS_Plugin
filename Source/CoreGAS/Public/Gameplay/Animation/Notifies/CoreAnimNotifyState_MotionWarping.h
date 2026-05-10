@@ -13,7 +13,7 @@ class COREGAS_API UCoreAnimNotifyState_MotionWarping : public UAnimNotifyState_M
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Motion Warping")
-	float StopDistanceFromTarget = 100.f;
+	float StopDistanceFromTarget = 150.f;
 
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 		float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
