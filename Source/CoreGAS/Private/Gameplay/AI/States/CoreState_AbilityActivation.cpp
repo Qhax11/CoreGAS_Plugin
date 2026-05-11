@@ -3,8 +3,6 @@
 #include "Gameplay/AI/States/CoreState_AbilityActivation.h"
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/Components/CoreASCBase.h"
-#include "GameFramework/Controller.h"
-#include "GameFramework/Pawn.h"
 
 void UCoreState_AbilityActivation::OnEnter(UCoreStateManager* StateManager)
 {
@@ -15,9 +13,7 @@ void UCoreState_AbilityActivation::OnEnter(UCoreStateManager* StateManager)
 		return;
 	}
 
-	AController* Controller = Cast<AController>(StateManager->GetOwner());
-	APawn* Pawn             = Controller ? Controller->GetPawn() : nullptr;
-	UCoreASCBase* ASC       = Pawn ? Pawn->FindComponentByClass<UCoreASCBase>() : nullptr;
+	UCoreASCBase* ASC = Context.OwnerASC;
 	if (!ASC)
 	{
 		return;
@@ -36,16 +32,14 @@ void UCoreState_AbilityActivation::OnEnter(UCoreStateManager* StateManager)
 
 void UCoreState_AbilityActivation::OnExit(UCoreStateManager* StateManager)
 {
-	AController* Controller = Cast<AController>(StateManager->GetOwner());
-	APawn* Pawn             = Controller ? Controller->GetPawn() : nullptr;
-	UCoreASCBase* ASC       = Pawn ? Pawn->FindComponentByClass<UCoreASCBase>() : nullptr;
+	UCoreASCBase* ASC = Context.OwnerASC;
 	if (ASC && EndListenerHandle.IsValid())
 	{
 		ASC->StopListeningForAbilityEnded(EndListenerHandle);
 	}
 
-	EndListenerHandle     = FDelegateHandle();
-	ActiveAbilityHandle   = FGameplayAbilitySpecHandle();
+	EndListenerHandle   = FDelegateHandle();
+	ActiveAbilityHandle = FGameplayAbilitySpecHandle();
 
 	Super::OnExit(StateManager);
 }

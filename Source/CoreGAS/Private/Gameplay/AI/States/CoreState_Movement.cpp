@@ -1,12 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/AI/States/CoreState_Movement.h"
-#include "Gameplay/AI/CoreAIController.h"
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/Components/CoreASCBase.h"
-#include "Gameplay/Libraries/CoreGASLibrary.h"
 #include "Gameplay/Tags/CoreAITags.h"
-#include "AIController.h"
 
 UCoreState_Movement::UCoreState_Movement()
 {
@@ -22,18 +19,12 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 		return;
 	}
 
-	ACoreAIController* AIController = Cast<ACoreAIController>(StateManager->GetOwner());
-	if (!AIController)
+	if (!Context.TargetActor)
 	{
 		return;
 	}
 
-	if (!AIController->GetFocusActor())
-	{
-		return;
-	}
-
-	UCoreASCBase* ASC = UCoreGASLibrary::GetCoreASCFromActor(AIController->GetPawn());
+	UCoreASCBase* ASC = Context.OwnerASC;
 	if (!ASC)
 	{
 		return;
@@ -55,11 +46,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 
 void UCoreState_Movement::OnExit(UCoreStateManager* StateManager)
 {
-	ACoreAIController* AIController = Cast<ACoreAIController>(StateManager->GetOwner());
-	UCoreASCBase* ASC = AIController
-		? UCoreGASLibrary::GetCoreASCFromActor(AIController->GetPawn())
-		: nullptr;
-
+	UCoreASCBase* ASC = Context.OwnerASC;
 	if (ASC && EndListenerHandle.IsValid())
 	{
 		ASC->StopListeningForAbilityEnded(EndListenerHandle);

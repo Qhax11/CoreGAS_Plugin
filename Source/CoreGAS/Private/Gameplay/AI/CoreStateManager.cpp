@@ -32,8 +32,12 @@ void UCoreStateManager::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	}
 }
 
-void UCoreStateManager::CreateStates()
+void UCoreStateManager::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor)
 {
+	StateContext.OwnerActor  = OwnerActor;
+	StateContext.OwnerASC    = OwnerASC;
+	StateContext.TargetActor = TargetActor;
+
 	StateInstances.Reset();
 
 	for (TSubclassOf<UCoreStateBase> StateClass : StateClassArray)
@@ -44,10 +48,9 @@ void UCoreStateManager::CreateStates()
 		}
 
 		UCoreStateBase* NewState = NewObject<UCoreStateBase>(this, StateClass);
+		NewState->InitializeContext(StateContext);
 		StateInstances.Add(NewState);
 	}
-
-	StartLogic();
 }
 
 void UCoreStateManager::RequestStateEnter(FGameplayTag StateTag)

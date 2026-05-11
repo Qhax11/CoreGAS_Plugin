@@ -4,9 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Gameplay/Components/CoreASCBase.h"
 #include "CoreStateBase.generated.h"
 
 class UCoreStateManager;
+
+USTRUCT()
+struct FCoreStateContext
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TObjectPtr<AActor> OwnerActor = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UCoreASCBase> OwnerASC = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<AActor> TargetActor = nullptr;
+};
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateTransitionRequested, FGameplayTag);
 
@@ -19,7 +35,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (Categories = "CoreGAS.AI.State"))
 	FGameplayTag StateTag;
 
+	UPROPERTY()
+	FCoreStateContext Context;
+
 	FOnStateTransitionRequested OnStateTransitionRequested;
+
+	void InitializeContext(const FCoreStateContext& InContext);
 
 	virtual void OnEnter(UCoreStateManager* StateManager);
 	virtual void OnExit(UCoreStateManager* StateManager);

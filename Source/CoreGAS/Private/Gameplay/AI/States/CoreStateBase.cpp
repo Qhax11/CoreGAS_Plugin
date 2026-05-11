@@ -2,6 +2,11 @@
 
 #include "Gameplay/AI/States/CoreStateBase.h"
 
+void UCoreStateBase::InitializeContext(const FCoreStateContext& InContext)
+{
+	Context = InContext;
+}
+
 void UCoreStateBase::OnEnter(UCoreStateManager* StateManager)
 {
 }

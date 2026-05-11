@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTagContainer.h"
+#include "Gameplay/AI/States/CoreStateBase.h"
 #include "CoreStateManager.generated.h"
 
 class UCoreStateBase;
@@ -28,8 +29,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Debug")
 	bool bEnableDebug = false;
 
+	UPROPERTY()
+	FCoreStateContext StateContext;
+
+	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor);
 	void RequestStateEnter(FGameplayTag StateTag);
-	void CreateStates();
 	void StartLogic();
 
 private:

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Gameplay/Subsystems/CoreSpawnSubsystem.h"
 #include "CoreAIController.generated.h"
 
 class UCoreStateManager;
@@ -21,10 +22,15 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void OnUnPossess() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreStateManager> StateManager;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreAIEventHandler> EventHandler;
+
+private:
+	UFUNCTION()
+	void OnHeroSpawned(const FHeroSpawnData& HeroSpawnData);
 };
