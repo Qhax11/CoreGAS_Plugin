@@ -15,9 +15,9 @@ class COREGAS_API UCoreAIEventHandler : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 	void Initialize(UCoreStateManager* InStateManager, UAbilitySystemComponent* InASC);
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 	void OnHealthEmptyTagChanged(const FGameplayTag Tag, int32 NewCount);

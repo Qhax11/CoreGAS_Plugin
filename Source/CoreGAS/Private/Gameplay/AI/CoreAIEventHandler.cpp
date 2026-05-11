@@ -20,6 +20,14 @@ void UCoreAIEventHandler::Initialize(UCoreStateManager* InStateManager, UAbility
 	}
 }
 
+void UCoreAIEventHandler::OnHealthEmptyTagChanged(const FGameplayTag Tag, int32 NewCount)
+{
+	if (NewCount > 0 && StateManager)
+	{
+		StateManager->RequestStateEnter(CoreGAS::AI::TAG_State_Death);
+	}
+}
+
 void UCoreAIEventHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (CachedASC.IsValid())
@@ -31,12 +39,4 @@ void UCoreAIEventHandler::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 	Super::EndPlay(EndPlayReason);
-}
-
-void UCoreAIEventHandler::OnHealthEmptyTagChanged(const FGameplayTag Tag, int32 NewCount)
-{
-	if (NewCount > 0 && StateManager)
-	{
-		StateManager->RequestStateEnter(CoreGAS::AI::TAG_State_Death);
-	}
 }

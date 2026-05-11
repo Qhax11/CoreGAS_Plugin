@@ -19,4 +19,7 @@ namespace CoreGAS::AI
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_StateEvent_TargetDetected)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_StateEvent_TakeHit)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_StateEvent_IncomingAttack)
+
+	// Ability tags
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_AI_Ability_Movement)
 }

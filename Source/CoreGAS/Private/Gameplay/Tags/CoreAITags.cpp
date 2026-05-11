@@ -16,4 +16,7 @@ namespace CoreGAS::AI
 	UE_DEFINE_GAMEPLAY_TAG(TAG_StateEvent_TargetDetected, "CoreGAS.AI.StateEvent.TargetDetected")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_StateEvent_TakeHit,        "CoreGAS.AI.StateEvent.TakeHit")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_StateEvent_IncomingAttack, "CoreGAS.AI.StateEvent.IncomingAttack")
+
+	// Ability tags
+	UE_DEFINE_GAMEPLAY_TAG(TAG_AI_Ability_Movement, "CoreGAS.AI.Ability.Movement")
 }

@@ -1,0 +1,52 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Abilities/Tasks/AbilityTask.h"
+#include "AIController.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "CoreAbilityTask_AIMoveTo.generated.h"
+
+class AAIController;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FCoreAIMoveDelegate);
+
+UCLASS()
+class COREGAS_API UCoreAbilityTask_AIMoveTo : public UAbilityTask
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FCoreAIMoveDelegate OnCompleted;
+
+	UPROPERTY(BlueprintAssignable)
+	FCoreAIMoveDelegate OnAborted;
+
+	UPROPERTY(BlueprintAssignable)
+	FCoreAIMoveDelegate OnFailed;
+
+	UFUNCTION(BlueprintCallable, Category = "CoreGAS|AI|Tasks",
+		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
+	static UCoreAbilityTask_AIMoveTo* CreateAIMoveToActor(
+		UGameplayAbility* OwningAbility,
+		AAIController* Controller,
+		AActor* TargetActor,
+		float AcceptanceRadius);
+
+	virtual void Activate() override;
+	virtual void OnDestroy(bool AbilityEnded) override;
+
+private:
+	UPROPERTY()
+	TObjectPtr<AAIController> CachedController;
+
+	UPROPERTY()
+	TObjectPtr<AActor> CachedTarget;
+
+	float CachedAcceptanceRadius = 50.f;
+
+	UFUNCTION()
+	void OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);
+};
