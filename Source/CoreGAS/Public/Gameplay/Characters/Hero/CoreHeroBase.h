@@ -23,6 +23,7 @@ public:
 	virtual UCoreASCBase* GetCoreAbilitySystemComponent() const override;
 
 protected:
+	virtual void BeginPlay() override;
 	virtual void InitializeGAS() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")

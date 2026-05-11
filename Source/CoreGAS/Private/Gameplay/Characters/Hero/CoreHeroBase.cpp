@@ -8,6 +8,7 @@
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Data/CoreHeroData.h"
 #include "Gameplay/Types/CoreGASTypes.h"
+#include "Gameplay/Subsystems/CoreSpawnSubsystem.h"
 
 UCoreASCBase* ACoreHeroBase::GetCoreAbilitySystemComponent() const
 {
@@ -25,6 +26,20 @@ ACoreHeroBase::ACoreHeroBase()
 	HeroGASDataComponent  = CreateDefaultSubobject<UCoreHeroGASDataComponent>(TEXT("HeroGASDataComponent"));
 	HeroAttributeSet      = CreateDefaultSubobject<UCoreHeroAttributeSet>(TEXT("HeroAttributeSet"));
 	TargetingComponent    = CreateDefaultSubobject<UCoreTargetingComponent>(TEXT("TargetingComponent"));
+}
+
+void ACoreHeroBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>();
+	if (SpawnSubsystem)
+	{
+		FHeroSpawnData SpawnData;
+		SpawnData.HeroActor = this;
+		SpawnData.HeroASC   = AbilitySystemComponent;
+		SpawnSubsystem->BroadcastHeroSpawn(SpawnData);
+	}
 }
 
 void ACoreHeroBase::InitializeGAS()

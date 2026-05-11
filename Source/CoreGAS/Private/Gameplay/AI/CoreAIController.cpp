@@ -18,5 +18,5 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 	StateManager->CreateStates();
 
 	UAbilitySystemComponent* EnemyASC = InPawn->FindComponentByClass<UAbilitySystemComponent>();
-	EventHandler->Initialize(StateManager, EnemyASC);
+	EventHandler->Initialize(StateManager, EnemyASC, GetGameInstance());
 }

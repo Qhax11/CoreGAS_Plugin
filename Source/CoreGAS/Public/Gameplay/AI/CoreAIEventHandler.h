@@ -4,10 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Gameplay/Subsystems/CoreSpawnSubsystem.h"
 #include "CoreAIEventHandler.generated.h"
 
 class UCoreStateManager;
 class UAbilitySystemComponent;
+class UGameInstance;
 
 UCLASS(ClassGroup=(CoreGAS), meta=(BlueprintSpawnableComponent))
 class COREGAS_API UCoreAIEventHandler : public UActorComponent
@@ -15,13 +17,21 @@ class COREGAS_API UCoreAIEventHandler : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	void Initialize(UCoreStateManager* InStateManager, UAbilitySystemComponent* InASC);
+	void Initialize(UCoreStateManager* InStateManager, UAbilitySystemComponent* InASC, UGameInstance* InGameInstance);
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	UPROPERTY()
+	TObjectPtr<AActor> CachedHeroActor;
+
 private:
+	UFUNCTION()
+	void OnHeroSpawned(const FHeroSpawnData& HeroSpawnData);
+
 	void OnHealthEmptyTagChanged(const FGameplayTag Tag, int32 NewCount);
 
-	TObjectPtr<UCoreStateManager>       StateManager;
+	UPROPERTY()
+	TObjectPtr<UCoreStateManager> CachedStateManager;
+
 	TWeakObjectPtr<UAbilitySystemComponent> CachedASC;
 };
