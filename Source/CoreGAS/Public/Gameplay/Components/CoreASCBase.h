@@ -34,6 +34,7 @@ public:
 
 	FDelegateHandle ListenForAbilityEndedByHandle(FGameplayAbilitySpecHandle SpecHandle, TFunction<void(const FAbilityEndedData&)> Callback);
 	bool ActivateAbilityByClassAndReturnHandle(TSubclassOf<UGameplayAbility> AbilityClass, FGameplayAbilitySpecHandle& OutHandle);
+	bool ActivateAbilityByClassAndReturnHandle(TSubclassOf<UGameplayAbility> AbilityClass, FGameplayAbilitySpecHandle& OutHandle, const FGameplayEventData& EventData);
 	void StopListeningForAbilityEnded(FDelegateHandle Handle);
 
 private:

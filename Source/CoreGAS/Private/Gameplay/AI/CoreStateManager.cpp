@@ -22,13 +22,14 @@ void UCoreStateManager::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	if (bEnableDebug)
 	{
-		const FString TagFull  = CurrentState->StateTag.ToString();
+		const FString TagFull = CurrentState->StateTag.ToString();
 		int32 LastDotIndex;
 		const FString TagLabel = TagFull.FindLastChar(TEXT('.'), LastDotIndex)
 			? TagFull.RightChop(LastDotIndex + 1)
 			: TagFull;
-
-		DrawDebugString(GetWorld(), GetOwner()->GetActorLocation() + FVector(0.f, 0.f, 150.f), TagLabel, nullptr, FColor::White, 0.f, true);
+		AActor* OwnerActor = StateContext.OwnerActor;
+		const FVector Location = OwnerActor ? OwnerActor->GetActorLocation() + FVector(0.f, 0.f, 150.f) : FVector::ZeroVector;
+		DrawDebugString(GetWorld(), Location, TagLabel, nullptr, FColor::White, 0.f, true);
 	}
 }
 

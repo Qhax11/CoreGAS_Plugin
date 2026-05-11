@@ -118,6 +118,18 @@ bool UCoreASCBase::ActivateAbilityByClassAndReturnHandle(TSubclassOf<UGameplayAb
 	return TryActivateAbility(Spec->Handle);
 }
 
+bool UCoreASCBase::ActivateAbilityByClassAndReturnHandle(TSubclassOf<UGameplayAbility> AbilityClass, FGameplayAbilitySpecHandle& OutHandle, const FGameplayEventData& EventData)
+{
+	FGameplayAbilitySpec* Spec = FindAbilitySpecFromClass(AbilityClass);
+	if (!Spec)
+	{
+		return false;
+	}
+
+	OutHandle = Spec->Handle;
+	return InternalTryActivateAbility(Spec->Handle, FPredictionKey(), nullptr, nullptr, &EventData);
+}
+
 void UCoreASCBase::StopListeningForAbilityEnded(FDelegateHandle Handle)
 {
 	for (int32 i = ActiveEndListeners.Num() - 1; i >= 0; --i)

@@ -26,7 +26,7 @@ void UCoreGameplayAbility_AIMovement::ActivateAbility(const FGameplayAbilitySpec
 		return;
 	}
 
-	AActor* Target = AIController->GetFocusActor();
+	AActor* Target = TriggerEventData ? const_cast<AActor*>(TriggerEventData->Target.Get()) : nullptr;
 	if (!Target)
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);

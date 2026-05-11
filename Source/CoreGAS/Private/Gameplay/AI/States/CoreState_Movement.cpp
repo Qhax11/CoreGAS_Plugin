@@ -4,6 +4,7 @@
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
+#include "Abilities/GameplayAbilityTypes.h"
 
 UCoreState_Movement::UCoreState_Movement()
 {
@@ -30,7 +31,10 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 		return;
 	}
 
-	if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementAbilityClass, ActiveAbilityHandle))
+	FGameplayEventData EventData;
+	EventData.Target = Context.TargetActor;
+
+	if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementAbilityClass, ActiveAbilityHandle, EventData))
 	{
 		return;
 	}
