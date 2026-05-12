@@ -48,6 +48,6 @@ void UCoreState_AbilityActivation::OnAbilityEnded()
 {
 	if (TransitionTag.IsValid())
 	{
-		BroadcastTransition(TransitionTag);
+		RequestTransition(TransitionTag);
 	}
 }

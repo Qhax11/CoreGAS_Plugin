@@ -37,8 +37,6 @@ public:
 	void StartLogic();
 
 private:
-	void HandleStateTransitionRequested(FGameplayTag TargetStateTag);
-
 	UPROPERTY()
 	TArray<TObjectPtr<UCoreStateBase>> StateInstances;
 

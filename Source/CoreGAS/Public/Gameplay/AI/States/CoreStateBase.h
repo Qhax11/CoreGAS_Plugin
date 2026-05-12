@@ -24,8 +24,6 @@ struct FCoreStateContext
 	TObjectPtr<AActor> TargetActor = nullptr;
 };
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnStateTransitionRequested, FGameplayTag);
-
 UCLASS(Abstract, Blueprintable, EditInlineNew)
 class COREGAS_API UCoreStateBase : public UObject
 {
@@ -38,8 +36,6 @@ public:
 	UPROPERTY()
 	FCoreStateContext Context;
 
-	FOnStateTransitionRequested OnStateTransitionRequested;
-
 	void InitializeContext(const FCoreStateContext& InContext);
 
 	virtual void OnEnter(UCoreStateManager* StateManager);
@@ -48,5 +44,8 @@ public:
 	virtual bool EnterCondition(UCoreStateManager* StateManager) const;
 
 protected:
-	void BroadcastTransition(FGameplayTag TargetStateTag);
+	UPROPERTY()
+	TObjectPtr<UCoreStateManager> CachedStateManager;
+
+	void RequestTransition(FGameplayTag TargetTag);
 };

@@ -15,12 +15,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 {
 	Super::OnEnter(StateManager);
 
-	if (!MovementAbilityClass)
-	{
-		return;
-	}
-
-	if (!Context.TargetActor)
+	if (!MovementAbilityClass || !Context.TargetActor)
 	{
 		return;
 	}
@@ -43,7 +38,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 	{
 		if (TransitionTag.IsValid())
 		{
-			BroadcastTransition(TransitionTag);
+			RequestTransition(TransitionTag);
 		}
 	});
 }

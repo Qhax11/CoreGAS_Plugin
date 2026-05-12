@@ -150,24 +150,25 @@ void UCoreASCBase::StopListeningForAbilityEnded(FDelegateHandle Handle)
 
 void UCoreASCBase::OnAnyAbilityEnded(const FAbilityEndedData& Data)
 {
-	TArray<int32> ToRemove;
-	for (int32 i = 0; i < ActiveEndListeners.Num(); ++i)
+	TArray<TFunction<void(const FAbilityEndedData&)>> PendingCallbacks;
+
+	for (int32 i = ActiveEndListeners.Num() - 1; i >= 0; --i)
 	{
 		if (ActiveEndListeners[i].WatchedHandle == Data.AbilitySpecHandle)
 		{
-			ActiveEndListeners[i].Callback(Data);
-			ToRemove.Add(i);
+			PendingCallbacks.Add(MoveTemp(ActiveEndListeners[i].Callback));
+			ActiveEndListeners.RemoveAt(i);
 		}
-	}
-
-	for (int32 i = ToRemove.Num() - 1; i >= 0; --i)
-	{
-		ActiveEndListeners.RemoveAtSwap(ToRemove[i]);
 	}
 
 	if (ActiveEndListeners.IsEmpty())
 	{
 		OnAbilityEnded.Remove(MasterAbilityEndedHandle);
 		MasterAbilityEndedHandle.Reset();
+	}
+
+	for (auto& Cb : PendingCallbacks)
+	{
+		Cb(Data);
 	}
 }

@@ -71,12 +71,10 @@ void UCoreStateManager::RequestStateEnter(FGameplayTag StateTag)
 
 		if (CurrentState)
 		{
-			CurrentState->OnStateTransitionRequested.RemoveAll(this);
 			CurrentState->OnExit(this);
 		}
 
 		CurrentState = State;
-		CurrentState->OnStateTransitionRequested.AddUObject(this, &UCoreStateManager::HandleStateTransitionRequested);
 		CurrentState->OnEnter(this);
 		return;
 	}
@@ -87,7 +85,3 @@ void UCoreStateManager::StartLogic()
 	RequestStateEnter(StartState);
 }
 
-void UCoreStateManager::HandleStateTransitionRequested(FGameplayTag TargetStateTag)
-{
-	RequestStateEnter(TargetStateTag);
-}
