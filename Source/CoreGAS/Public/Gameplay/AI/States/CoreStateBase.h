@@ -8,6 +8,7 @@
 #include "CoreStateBase.generated.h"
 
 class UCoreStateManager;
+class UCoreAIBehaviorDecision;
 
 USTRUCT()
 struct FCoreStateContext
@@ -22,6 +23,9 @@ struct FCoreStateContext
 
 	UPROPERTY()
 	TObjectPtr<AActor> TargetActor = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UCoreAIBehaviorDecision> BehaviorDecision = nullptr;
 };
 
 UCLASS(Abstract, Blueprintable, EditInlineNew)

@@ -4,9 +4,10 @@
 #include "Gameplay/Libraries/CoreGASLibrary.h"
 #include "Gameplay/Components/CoreASCBase.h"
 
-void UCoreEnemyGASDataComponent::InitializeGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet)
+void UCoreEnemyGASDataComponent::InitializeGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreCharacterData* InCharacterData)
 {
-	UCoreGASLibrary::ApplyCharacterData(ASC, AttributeSet, CharacterData);
+	UCoreCharacterData* DataToUse = InCharacterData ? InCharacterData : CharacterData.Get();
+	UCoreGASLibrary::ApplyCharacterData(ASC, AttributeSet, DataToUse);
 
 	if (ASC)
 	{

@@ -32,7 +32,7 @@ public:
 	UPROPERTY()
 	FCoreStateContext StateContext;
 
-	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor);
+	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UCoreAIBehaviorDecision* BehaviorDecision);
 	void RequestStateEnter(FGameplayTag StateTag);
 	void StartLogic();
 

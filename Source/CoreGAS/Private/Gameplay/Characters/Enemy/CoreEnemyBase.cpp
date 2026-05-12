@@ -28,17 +28,14 @@ ACoreEnemyBase::ACoreEnemyBase()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
-void ACoreEnemyBase::InitializeGAS()
-{
-	EnemyGASDataComponent->InitializeGASData(AbilitySystemComponent, EnemyAttributeSet);
-}
-
 void ACoreEnemyBase::InitializeFromData(const FCoreEnemyRowData& RowData)
 {
 	GetMesh()->SetSkeletalMesh(RowData.Mesh.LoadSynchronous());
 	GetMesh()->SetAnimInstanceClass(RowData.AnimBP);
 	GetMesh()->SetRelativeLocation(RowData.MeshOffset);
 	GetMesh()->SetRelativeRotation(RowData.MeshRotation);
+
+	EnemyGASDataComponent->InitializeGASData(AbilitySystemComponent, EnemyAttributeSet, RowData.CharacterData);
 
 	if (ACoreAIController* EnemyController = Cast<ACoreAIController>(GetController()))
 	{

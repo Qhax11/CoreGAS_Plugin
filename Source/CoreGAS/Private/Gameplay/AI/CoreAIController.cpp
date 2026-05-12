@@ -20,8 +20,6 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UE_LOG(LogTemp, Warning, TEXT("ACoreAIController OnPossess:"));
-
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())
 	{
 		if (SpawnSubsystem->IsHeroSpawned())
@@ -38,15 +36,14 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 {
 	APawn* CachedPawn = GetPawn();
-	UCoreASCBase* EnemyASC = CachedPawn ? CachedPawn->FindComponentByClass<UCoreASCBase>() : nullptr;
+	UCoreASCBase* OwnerASC = CachedPawn ? CachedPawn->FindComponentByClass<UCoreASCBase>() : nullptr;
 
-	EventHandler->Initialize(StateManager, EnemyASC);
+	EventHandler->Initialize(StateManager, OwnerASC);
 
-	StateManager->Initialize(CachedPawn, EnemyASC, HeroSpawnData.HeroActor);
-	StateManager->RequestStateEnter(CoreGAS::AI::TAG_State_Combat_Movement);
+	StateManager->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, BehaviorDecision);
 
 	UAbilitySystemComponent* TargetASC = Cast<UAbilitySystemComponent>(HeroSpawnData.HeroActor->FindComponentByClass<UAbilitySystemComponent>());
-	BehaviorDecision->Initialize(CachedPawn, EnemyASC, HeroSpawnData.HeroActor, TargetASC);
+	BehaviorDecision->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, TargetASC);
 }
 
 void ACoreAIController::InitializeBehavior(UCoreEnemyArchetypeData* ArchetypeData)

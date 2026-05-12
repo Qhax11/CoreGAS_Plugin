@@ -34,11 +34,12 @@ void UCoreStateManager::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 	}
 }
 
-void UCoreStateManager::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor)
+void UCoreStateManager::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UCoreAIBehaviorDecision* BehaviorDecision)
 {
-	StateContext.OwnerActor  = OwnerActor;
-	StateContext.OwnerASC    = OwnerASC;
-	StateContext.TargetActor = TargetActor;
+	StateContext.OwnerActor       = OwnerActor;
+	StateContext.OwnerASC         = OwnerASC;
+	StateContext.TargetActor      = TargetActor;
+	StateContext.BehaviorDecision = BehaviorDecision;
 
 	StateInstances.Reset();
 

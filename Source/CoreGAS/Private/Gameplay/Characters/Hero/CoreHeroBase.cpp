@@ -32,6 +32,8 @@ void ACoreHeroBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HeroGASDataComponent->InitializeGASData(AbilitySystemComponent, HeroAttributeSet);
+
 	UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>();
 	if (SpawnSubsystem)
 	{
@@ -40,11 +42,6 @@ void ACoreHeroBase::BeginPlay()
 		SpawnData.HeroASC   = AbilitySystemComponent;
 		SpawnSubsystem->BroadcastHeroSpawn(SpawnData);
 	}
-}
-
-void ACoreHeroBase::InitializeGAS()
-{
-	HeroGASDataComponent->InitializeGASData(AbilitySystemComponent, HeroAttributeSet);
 }
 
 void ACoreHeroBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

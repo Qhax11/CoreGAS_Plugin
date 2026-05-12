@@ -22,8 +22,6 @@ public:
 	void InitializeFromData(const FCoreEnemyRowData& RowData);
 
 protected:
-	virtual void InitializeGAS() override;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreEnemyGASDataComponent> EnemyGASDataComponent;
 

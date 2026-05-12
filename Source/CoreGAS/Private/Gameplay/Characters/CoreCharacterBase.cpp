@@ -31,6 +31,4 @@ void ACoreCharacterBase::BeginPlay()
 	}
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-
-	InitializeGAS();
 }

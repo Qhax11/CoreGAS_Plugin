@@ -24,7 +24,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-	virtual void InitializeGAS() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreHeroInputComponent> HeroInputComponent;

@@ -19,5 +19,5 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Data")
 	TObjectPtr<UCoreCharacterData> CharacterData;
 
-	void InitializeGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet);
+	void InitializeGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreCharacterData* InCharacterData = nullptr);
 };
