@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/AI/BehaviorDecision/Data/CoreAttackDataBase.h"
+#include "StructUtils/InstancedStruct.h"
+#include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "CoreAttackDecisionService.generated.h"
 
@@ -32,7 +33,7 @@ class COREGAS_API UCoreAttackDecisionService : public UObject
 
 public:
 	virtual void Initialize(const FCoreDecisionServiceInitParams& Params);
-	UCoreAttackDataBase* GetBestAttack(const TArray<UCoreAttackDataBase*>& AttackOptions);
+	const FCoreAttackDataBase* GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions);
 
 protected:
 	UPROPERTY()

@@ -10,39 +10,49 @@ void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams
 	CachedTargetASC = Params.TargetASC;
 }
 
-UCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArray<UCoreAttackDataBase*>& AttackOptions)
+const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions)
 {
-	FAttackDecisionContext Context;
-	Context.Owner     = CachedOwner;
-	Context.Target    = CachedTarget;
-	Context.OwnerASC  = CachedOwnerASC;
-	Context.TargetASC = CachedTargetASC;
-
-	UCoreAttackDataBase* BestAttack = nullptr;
+	const FCoreAttackDataBase* BestAttack = nullptr;
 	float BestScore = -MAX_FLT;
 
-	for (UCoreAttackDataBase* Attack : AttackOptions)
+	for (const TInstancedStruct<FCoreAttackDataBase>& Option : AttackOptions)
 	{
-		if (!Attack)
+		const FCoreAttackDataBase* Data = Option.GetPtr();
+		if (!Data)
 		{
 			continue;
 		}
 
-		if (!Attack->IsEnable(Context))
+		if (Data->CooldownTag.IsValid() && CachedOwnerASC && CachedOwnerASC->HasMatchingGameplayTag(Data->CooldownTag))
 		{
 			continue;
 		}
 
-		if (!Attack->PassesChance(Context))
+		float DistanceScore = -1.f;
+		if (CachedOwner && CachedTarget)
 		{
-			continue;
+			const float Distance = FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
+
+			if (Distance < Data->MinRange)
+			{
+				DistanceScore = -1.f;
+			}
+			else if (Distance > Data->MaxRange)
+			{
+				DistanceScore = -0.5f;
+			}
+			else
+			{
+				const float NormalizedDist = (Distance - Data->MinRange) / (Data->MaxRange - Data->MinRange);
+				DistanceScore = FMath::Lerp(-1.f, 1.f, NormalizedDist);
+			}
 		}
 
-		const float Score = Attack->GetScore(Context);
-		if (Score > BestScore)
+		const float TotalScore = DistanceScore + Data->ScoreBias;
+		if (TotalScore > BestScore)
 		{
-			BestScore  = Score;
-			BestAttack = Attack;
+			BestScore  = TotalScore;
+			BestAttack = Data;
 		}
 	}
 

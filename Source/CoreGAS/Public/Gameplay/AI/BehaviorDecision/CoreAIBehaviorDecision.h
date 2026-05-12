@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Gameplay/AI/BehaviorDecision/Services/CoreAttackDecisionService.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreEnemyArchetypeData.h"
+#include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "CoreAIBehaviorDecision.generated.h"
 
@@ -25,7 +26,7 @@ public:
 
 	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC);
 	void SetArchetypeData(UCoreEnemyArchetypeData* ArchetypeData);
-	UCoreAttackDataBase* GetBestAttack();
+	const FCoreAttackDataBase* GetBestAttack();
 
 	UPROPERTY()
 	TObjectPtr<UCoreEnemyArchetypeData> CachedArchetypeData;

@@ -25,14 +25,14 @@ void UCoreAIBehaviorDecision::SetArchetypeData(UCoreEnemyArchetypeData* Archetyp
 	CachedArchetypeData = ArchetypeData;
 }
 
-UCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
+const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 {
 	if (!AttackDecisionService || !CachedArchetypeData)
 	{
 		return nullptr;
 	}
 
-	UCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
+	const FCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
 
 	if (bEnableDebug && Result)
 	{

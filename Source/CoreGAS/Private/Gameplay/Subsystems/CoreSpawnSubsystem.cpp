@@ -4,5 +4,7 @@
 
 void UCoreSpawnSubsystem::BroadcastHeroSpawn(const FHeroSpawnData& SpawnData)
 {
+	CachedHeroSpawnData = SpawnData;
+	bHeroSpawned = true;
 	OnHeroSpawn.Broadcast(SpawnData);
 }

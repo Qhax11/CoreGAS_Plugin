@@ -31,6 +31,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "CoreGAS|Spawn")
 	FOnHeroSpawn OnHeroSpawn;
 
+	UPROPERTY()
+	FHeroSpawnData CachedHeroSpawnData;
+
+	bool bHeroSpawned = false;
+
+	bool IsHeroSpawned() const { return bHeroSpawned; }
+	const FHeroSpawnData& GetLastHeroSpawnData() const { return CachedHeroSpawnData; }
+
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|Spawn")
 	void BroadcastHeroSpawn(const FHeroSpawnData& SpawnData);
 };

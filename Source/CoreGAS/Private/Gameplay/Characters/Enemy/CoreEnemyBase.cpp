@@ -24,6 +24,8 @@ ACoreEnemyBase::ACoreEnemyBase()
 	EnemyAttributeSet     = CreateDefaultSubobject<UCoreEnemyAttributeSet>(TEXT("EnemyAttributeSet"));
 
 	AIControllerClass = ACoreAIController::StaticClass();
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ACoreEnemyBase::InitializeGAS()

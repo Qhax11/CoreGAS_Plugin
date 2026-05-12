@@ -20,9 +20,18 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
+	UE_LOG(LogTemp, Warning, TEXT("ACoreAIController OnPossess:"));
+
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())
 	{
-		SpawnSubsystem->OnHeroSpawn.AddDynamic(this, &ACoreAIController::OnHeroSpawned);
+		if (SpawnSubsystem->IsHeroSpawned())
+		{
+			OnHeroSpawned(SpawnSubsystem->GetLastHeroSpawnData());
+		}
+		else
+		{
+			SpawnSubsystem->OnHeroSpawn.AddDynamic(this, &ACoreAIController::OnHeroSpawned);
+		}
 	}
 }
 

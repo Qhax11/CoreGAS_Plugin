@@ -28,6 +28,7 @@ void UCoreGameplayAbility_HitReaction::ActivateAbility(const FGameplayAbilitySpe
 			KnockbackDirection.Z = 0.f;
 			KnockbackDirection = KnockbackDirection.GetSafeNormal();
 		}
+
 		OwnerCharacter->LaunchCharacter(KnockbackDirection * KnockbackForce, true, false);
 	}
 
