@@ -9,6 +9,7 @@
 class UCoreEnemyGASDataComponent;
 class UCoreEnemyAttributeSet;
 class ACoreAIController;
+struct FCoreEnemyRowData;
 
 UCLASS()
 class COREGAS_API ACoreEnemyBase : public ACoreCharacterBase
@@ -18,6 +19,7 @@ class COREGAS_API ACoreEnemyBase : public ACoreCharacterBase
 public:
 	ACoreEnemyBase();
 	virtual UCoreASCBase* GetCoreAbilitySystemComponent() const override;
+	void InitializeFromData(const FCoreEnemyRowData& RowData);
 
 protected:
 	virtual void InitializeGAS() override;

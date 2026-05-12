@@ -9,6 +9,8 @@
 
 class UCoreStateManager;
 class UCoreAIEventHandler;
+class UCoreAIBehaviorDecision;
+class UCoreEnemyArchetypeData;
 
 UCLASS()
 class COREGAS_API ACoreAIController : public AAIController
@@ -19,6 +21,7 @@ public:
 	ACoreAIController();
 
 	UCoreStateManager* GetStateManager() const { return StateManager; }
+	void InitializeBehavior(UCoreEnemyArchetypeData* ArchetypeData);
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -29,6 +32,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreAIEventHandler> EventHandler;
+
+	UPROPERTY()
+	TObjectPtr<UCoreAIBehaviorDecision> BehaviorDecision;
 
 private:
 	UFUNCTION()

@@ -6,6 +6,7 @@
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Types/CoreGASTypes.h"
 #include "Gameplay/AI/CoreAIController.h"
+#include "Gameplay/AI/Spawning/CoreEnemyRowData.h"
 
 UCoreASCBase* ACoreEnemyBase::GetCoreAbilitySystemComponent() const
 {
@@ -28,4 +29,17 @@ ACoreEnemyBase::ACoreEnemyBase()
 void ACoreEnemyBase::InitializeGAS()
 {
 	EnemyGASDataComponent->InitializeGASData(AbilitySystemComponent, EnemyAttributeSet);
+}
+
+void ACoreEnemyBase::InitializeFromData(const FCoreEnemyRowData& RowData)
+{
+	GetMesh()->SetSkeletalMesh(RowData.Mesh.LoadSynchronous());
+	GetMesh()->SetAnimInstanceClass(RowData.AnimBP);
+	GetMesh()->SetRelativeLocation(RowData.MeshOffset);
+	GetMesh()->SetRelativeRotation(RowData.MeshRotation);
+
+	if (ACoreAIController* EnemyController = Cast<ACoreAIController>(GetController()))
+	{
+		EnemyController->InitializeBehavior(RowData.ArchetypeData);
+	}
 }

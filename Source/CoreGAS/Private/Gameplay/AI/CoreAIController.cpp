@@ -3,13 +3,17 @@
 #include "Gameplay/AI/CoreAIController.h"
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/CoreAIEventHandler.h"
+#include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
+#include "Gameplay/AI/BehaviorDecision/Data/CoreEnemyArchetypeData.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
+#include "AbilitySystemComponent.h"
 
 ACoreAIController::ACoreAIController()
 {
-	StateManager = CreateDefaultSubobject<UCoreStateManager>(TEXT("StateManager"));
-	EventHandler = CreateDefaultSubobject<UCoreAIEventHandler>(TEXT("EventHandler"));
+	StateManager      = CreateDefaultSubobject<UCoreStateManager>(TEXT("StateManager"));
+	EventHandler      = CreateDefaultSubobject<UCoreAIEventHandler>(TEXT("EventHandler"));
+	BehaviorDecision  = CreateDefaultSubobject<UCoreAIBehaviorDecision>(TEXT("BehaviorDecision"));
 }
 
 void ACoreAIController::OnPossess(APawn* InPawn)
@@ -31,6 +35,20 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 
 	StateManager->Initialize(CachedPawn, EnemyASC, HeroSpawnData.HeroActor);
 	StateManager->RequestStateEnter(CoreGAS::AI::TAG_State_Combat_Movement);
+
+	UAbilitySystemComponent* TargetASC = Cast<UAbilitySystemComponent>(HeroSpawnData.HeroActor->FindComponentByClass<UAbilitySystemComponent>());
+	BehaviorDecision->Initialize(CachedPawn, EnemyASC, HeroSpawnData.HeroActor, TargetASC);
+}
+
+void ACoreAIController::InitializeBehavior(UCoreEnemyArchetypeData* ArchetypeData)
+{
+	if (!ArchetypeData)
+	{
+		return;
+	}
+
+	BehaviorDecision->SetArchetypeData(ArchetypeData);
+	StateManager->StartLogic();
 }
 
 void ACoreAIController::OnUnPossess()
