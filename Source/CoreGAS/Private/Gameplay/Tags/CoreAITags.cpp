@@ -11,6 +11,7 @@ namespace CoreGAS::AI
 	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Combat_Attack,  "CoreGAS.AI.State.Combat.Attack")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Combat_TakeHit, "CoreGAS.AI.State.Combat.TakeHit")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Death,          "CoreGAS.AI.State.Death")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Dead,           "CoreGAS.AI.State.Dead")
 
 	// State event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_StateEvent_TargetDetected, "CoreGAS.AI.StateEvent.TargetDetected")
