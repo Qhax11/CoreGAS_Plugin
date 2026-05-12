@@ -27,6 +27,7 @@ void UCoreStateManager::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 		const FString TagLabel = TagFull.FindLastChar(TEXT('.'), LastDotIndex)
 			? TagFull.RightChop(LastDotIndex + 1)
 			: TagFull;
+
 		AActor* OwnerActor = StateContext.OwnerActor;
 		const FVector Location = OwnerActor ? OwnerActor->GetActorLocation() + FVector(0.f, 0.f, 150.f) : FVector::ZeroVector;
 		DrawDebugString(GetWorld(), Location, TagLabel, nullptr, FColor::White, 0.f, true);
