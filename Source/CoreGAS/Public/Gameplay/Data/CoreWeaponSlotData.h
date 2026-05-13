@@ -20,4 +20,10 @@ struct FCoreWeaponSlotData
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Equipment", Meta = (Categories = "CoreGAS.Equipment.Slot"))
 	FGameplayTag SlotTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Equipment")
+	FVector AttachLocationOffset = FVector::ZeroVector;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Equipment")
+	FRotator AttachRotationOffset = FRotator::ZeroRotator;
 };

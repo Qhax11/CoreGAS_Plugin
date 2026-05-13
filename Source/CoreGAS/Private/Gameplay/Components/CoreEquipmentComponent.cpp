@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/Components/CoreEquipmentComponent.h"
 #include "Gameplay/Actors/Weapon/CoreWeaponBase.h"
@@ -23,11 +23,11 @@ void UCoreEquipmentComponent::BeginPlay()
 
 	for (const FCoreWeaponSlotData& Entry : EquipmentData->DefaultWeapons)
 	{
-		EquipWeaponByClass(Entry.WeaponClass, Entry.AttachSocket, Entry.SlotTag);
+		EquipWeaponByClass(Entry.WeaponClass, Entry.AttachSocket, Entry.SlotTag, Entry.AttachLocationOffset, Entry.AttachRotationOffset);
 	}
 }
 
-void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName AttachSocket, FGameplayTag SlotTag)
+void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> WeaponClass, FName AttachSocket, FGameplayTag SlotTag, FVector LocationOffset, FRotator RotationOffset)
 {
 	if (!WeaponClass || !GetOwner() || !GetOwner()->GetWorld())
 	{
@@ -41,10 +41,10 @@ void UCoreEquipmentComponent::EquipWeaponByClass(TSubclassOf<ACoreWeaponBase> We
 		return;
 	}
 
-	EquipWeapon(SpawnedWeapon, AttachSocket, SlotTag);
+	EquipWeapon(SpawnedWeapon, AttachSocket, SlotTag, LocationOffset, RotationOffset);
 }
 
-void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName AttachSocket, FGameplayTag SlotTag)
+void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName AttachSocket, FGameplayTag SlotTag, FVector LocationOffset, FRotator RotationOffset)
 {
 	if (!Weapon)
 	{
@@ -65,6 +65,9 @@ void UCoreEquipmentComponent::EquipWeapon(ACoreWeaponBase* Weapon, FName AttachS
 
 	FAttachmentTransformRules AttachRules(EAttachmentRule::SnapToTarget, false);
 	Weapon->AttachToComponent(OwnerMesh, AttachRules, AttachSocket);
+	Weapon->SetActorRelativeLocation(LocationOffset);
+	Weapon->SetActorRelativeRotation(RotationOffset);
+
 	EquippedWeapons.Add(SlotTag, Weapon);
 }
 
