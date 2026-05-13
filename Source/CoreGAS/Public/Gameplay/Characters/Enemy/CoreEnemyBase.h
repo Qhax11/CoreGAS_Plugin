@@ -19,7 +19,8 @@ class COREGAS_API ACoreEnemyBase : public ACoreCharacterBase
 public:
 	ACoreEnemyBase();
 	virtual UCoreASCBase* GetCoreAbilitySystemComponent() const override;
-	void InitializeFromData(const FCoreEnemyRowData& RowData);
+
+	virtual void BeginPlay() override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
