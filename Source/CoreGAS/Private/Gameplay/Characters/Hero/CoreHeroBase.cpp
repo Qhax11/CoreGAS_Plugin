@@ -2,11 +2,11 @@
 
 #include "Gameplay/Characters/Hero/CoreHeroBase.h"
 #include "Gameplay/Characters/Hero/Components/CoreHeroInputComponent.h"
-#include "Gameplay/Characters/Hero/Components/CoreHeroGASDataComponent.h"
+#include "Gameplay/Characters/Hero/Components/CoreHeroDataComponent.h"
 #include "Gameplay/Components/CoreTargetingComponent.h"
 #include "Gameplay/Attributes/Hero/CoreHeroAttributeSet.h"
 #include "Gameplay/Components/CoreASCBase.h"
-#include "Gameplay/Data/CoreHeroData.h"
+#include "Gameplay/Data/CoreHeroGASData.h"
 #include "Gameplay/Types/CoreGASTypes.h"
 #include "Gameplay/Subsystems/CoreSpawnSubsystem.h"
 
@@ -23,7 +23,7 @@ ACoreHeroBase::ACoreHeroBase()
 	GetMesh()->SetCollisionResponseToChannel(ECC_Damage, ECR_Block);
 
 	HeroInputComponent    = CreateDefaultSubobject<UCoreHeroInputComponent>(TEXT("HeroInputComponent"));
-	HeroGASDataComponent  = CreateDefaultSubobject<UCoreHeroGASDataComponent>(TEXT("HeroGASDataComponent"));
+	HeroDataComponent = CreateDefaultSubobject<UCoreHeroDataComponent>(TEXT("HeroDataComponent"));
 	HeroAttributeSet      = CreateDefaultSubobject<UCoreHeroAttributeSet>(TEXT("HeroAttributeSet"));
 	TargetingComponent    = CreateDefaultSubobject<UCoreTargetingComponent>(TEXT("TargetingComponent"));
 }
@@ -32,7 +32,7 @@ void ACoreHeroBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HeroGASDataComponent->InitializeGASData(AbilitySystemComponent, HeroAttributeSet);
+	HeroDataComponent->Initialize(AbilitySystemComponent, HeroAttributeSet);
 
 	UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>();
 	if (SpawnSubsystem)
@@ -50,12 +50,12 @@ void ACoreHeroBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 
 	HeroInputComponent->InitializeInputComponent(AbilitySystemComponent, PlayerInputComponent, Cast<APlayerController>(GetController()));
 
-	if (!HeroGASDataComponent->HeroData)
+	if (!HeroDataComponent->GASData)
 	{
 		return;
 	}
 
-	for (const FCoreAbilityInputBinding& Binding : HeroGASDataComponent->HeroData->AbilityInputBindings)
+	for (const FCoreAbilityInputBinding& Binding : HeroDataComponent->GASData->AbilityInputBindings)
 	{
 		if (UInputAction* Action = Binding.InputAction.LoadSynchronous())
 		{

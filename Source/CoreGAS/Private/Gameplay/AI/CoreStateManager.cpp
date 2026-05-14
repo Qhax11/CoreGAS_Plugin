@@ -2,6 +2,7 @@
 
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/States/CoreStateBase.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 #include "DrawDebugHelpers.h"
 
 UCoreStateManager::UCoreStateManager()
@@ -77,6 +78,7 @@ void UCoreStateManager::RequestStateEnter(FGameplayTag StateTag)
 			CurrentState->OnExit(this);
 		}
 
+		UE_LOG(LogCoreAI, Log, TEXT("[StateManager] Transition -> %s"), *StateTag.ToString());
 		CurrentState = State;
 		CurrentState->OnEnter(this);
 		return;

@@ -2,6 +2,7 @@
 
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 #include "Gameplay/Tags/CoreAITags.h"
 
 UCoreAIBehaviorDecision::UCoreAIBehaviorDecision()
@@ -22,7 +23,7 @@ void UCoreAIBehaviorDecision::Initialize(AActor* OwnerActor, UCoreASCBase* Owner
 	AttackDecisionService->Initialize(Params);
 }
 
-void UCoreAIBehaviorDecision::SetArchetypeData(UCoreEnemyArchetypeData* ArchetypeData)
+void UCoreAIBehaviorDecision::SetBehaviorData(UCoreEnemyAIData* ArchetypeData)
 {
 	CachedArchetypeData = ArchetypeData;
 }
@@ -36,6 +37,8 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 
 	const FCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
 	SelectedAttack = Result;
+
+	UE_LOG(LogCoreAIDecision, Log, TEXT("[BehaviorDecision] GetBestAttack: %s"), Result ? *Result->AttackName.ToString() : TEXT("null"));
 
 	if (bEnableDebug && Result)
 	{
@@ -52,31 +55,37 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetSelectedAttack() const
 
 FGameplayTag UCoreAIBehaviorDecision::DecideNextState() const
 {
+	FGameplayTag DecidedTag;
+
 	if (!CachedArchetypeData || !AttackDecisionService)
 	{
-		return CoreGAS::AI::TAG_State_Idle;
+		DecidedTag = CoreGAS::AI::TAG_State_Idle;
 	}
-
-	const FCoreAttackDataBase* BestAttack = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
-	if (!BestAttack)
+	else
 	{
-		return CoreGAS::AI::TAG_State_Combat_Movement;
-	}
-
-	float MaxRange = 150.f;
-	const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
-	if (SimpleAttack && SimpleAttack->AbilityClass)
-	{
-		if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
+		const FCoreAttackDataBase* BestAttack = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
+		if (!BestAttack)
 		{
-			MaxRange = CDO->MaxRange;
+			DecidedTag = CoreGAS::AI::TAG_State_Combat_Movement;
+		}
+		else
+		{
+			float MaxRange = 150.f;
+			const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
+			if (SimpleAttack && SimpleAttack->AbilityClass)
+			{
+				if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
+				{
+					MaxRange = CDO->MaxRange;
+				}
+			}
+
+			DecidedTag = (AttackDecisionService->GetDistanceToTarget() > MaxRange)
+				? CoreGAS::AI::TAG_State_Combat_Movement
+				: CoreGAS::AI::TAG_State_Combat_Attack;
 		}
 	}
 
-	if (AttackDecisionService->GetDistanceToTarget() > MaxRange)
-	{
-		return CoreGAS::AI::TAG_State_Combat_Movement;
-	}
-
-	return CoreGAS::AI::TAG_State_Combat_Attack;
+	UE_LOG(LogCoreAIDecision, Log, TEXT("[BehaviorDecision] DecideNextState: %s"), *DecidedTag.ToString());
+	return DecidedTag;
 }

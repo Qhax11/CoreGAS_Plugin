@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Gameplay/AI/BehaviorDecision/Services/CoreAttackDecisionService.h"
-#include "Gameplay/AI/BehaviorDecision/Data/CoreEnemyArchetypeData.h"
+#include "Gameplay/Data/CoreEnemyAIData.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "CoreAIBehaviorDecision.generated.h"
@@ -25,13 +25,13 @@ public:
 	TObjectPtr<UCoreAttackDecisionService> AttackDecisionService;
 
 	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC);
-	void SetArchetypeData(UCoreEnemyArchetypeData* ArchetypeData);
+	void SetBehaviorData(UCoreEnemyAIData* ArchetypeData);
 	const FCoreAttackDataBase* GetBestAttack();
 	const FCoreAttackDataBase* GetSelectedAttack() const;
 	FGameplayTag DecideNextState() const;
 
 	UPROPERTY()
-	TObjectPtr<UCoreEnemyArchetypeData> CachedArchetypeData;
+	TObjectPtr<UCoreEnemyAIData> CachedArchetypeData;
 
 private:
 	const FCoreAttackDataBase* SelectedAttack = nullptr;

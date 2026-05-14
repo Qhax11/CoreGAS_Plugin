@@ -4,20 +4,20 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CoreEnemyGASDataComponent.generated.h"
+#include "CoreHeroDataComponent.generated.h"
 
-class UCoreCharacterData;
+class UCoreHeroGASData;
 class UCoreASCBase;
 class UAttributeSet;
 
 UCLASS()
-class COREGAS_API UCoreEnemyGASDataComponent : public UActorComponent
+class COREGAS_API UCoreHeroDataComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "CoreGAS|Data")
-	TObjectPtr<UCoreCharacterData> CharacterData;
+	TObjectPtr<UCoreHeroGASData> GASData;
 
-	void InitializeGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreCharacterData* InCharacterData = nullptr);
+	void Initialize(UCoreASCBase* ASC, UAttributeSet* AttributeSet);
 };

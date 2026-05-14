@@ -9,7 +9,7 @@
 
 class UCoreASCBase;
 class UAttributeSet;
-class UCoreCharacterData;
+class UCoreGASData;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -18,7 +18,7 @@ class COREGAS_API UCoreGASLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	static void ApplyCharacterData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreCharacterData* Data);
+	static void ApplyGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreGASData* Data);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "CoreGAS")
 	static UCoreASCBase* GetCoreASCFromActor(AActor* Actor);

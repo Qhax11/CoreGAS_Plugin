@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/Data/CoreCharacterData.h"
-#include "CoreHeroData.generated.h"
+#include "Gameplay/Data/CoreGASData.h"
+#include "CoreHeroGASData.generated.h"
 
 UCLASS(BlueprintType)
-class COREGAS_API UCoreHeroData : public UCoreCharacterData
+class COREGAS_API UCoreHeroGASData : public UCoreGASData
 {
 	GENERATED_BODY()
 

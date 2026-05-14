@@ -6,13 +6,12 @@
 #include "Engine/DataAsset.h"
 #include "StructUtils/InstancedStruct.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
-#include "CoreEnemyArchetypeData.generated.h"
+#include "CoreEnemyAIData.generated.h"
 
 UCLASS(BlueprintType)
-class COREGAS_API UCoreEnemyArchetypeData : public UPrimaryDataAsset
+class COREGAS_API UCoreEnemyAIData : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
-
 public:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (ExcludeBaseStruct))
 	TArray<TInstancedStruct<FCoreAttackDataBase>> AttackOptions;

@@ -7,7 +7,7 @@
 #include "CoreHeroBase.generated.h"
 
 class UCoreHeroInputComponent;
-class UCoreHeroGASDataComponent;
+class UCoreHeroDataComponent;
 class UCoreHeroAttributeSet;
 class UCoreTargetingComponent;
 
@@ -29,7 +29,7 @@ protected:
 	TObjectPtr<UCoreHeroInputComponent> HeroInputComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
-	TObjectPtr<UCoreHeroGASDataComponent> HeroGASDataComponent;
+	TObjectPtr<UCoreHeroDataComponent> HeroDataComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreTargetingComponent> TargetingComponent;

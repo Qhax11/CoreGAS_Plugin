@@ -5,6 +5,7 @@
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "Abilities/GameplayAbilityTypes.h"
@@ -38,6 +39,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 	{
 		UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
 		EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
+		UE_LOG(LogCoreAIMovement, Log, TEXT("[Movement] AcceptanceRadius set to: %.1f"), EventData.EventMagnitude);
 	}
 
 	if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementAbilityClass, ActiveAbilityHandle, EventData))

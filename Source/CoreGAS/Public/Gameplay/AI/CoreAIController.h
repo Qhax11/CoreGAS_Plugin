@@ -21,6 +21,7 @@ public:
 	ACoreAIController();
 
 	UCoreStateManager* GetStateManager() const { return StateManager; }
+	UCoreAIBehaviorDecision* GetBehaviorDecision() const { return BehaviorDecision; }
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

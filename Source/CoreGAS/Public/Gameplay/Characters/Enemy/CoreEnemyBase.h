@@ -6,7 +6,7 @@
 #include "Gameplay/Characters/CoreCharacterBase.h"
 #include "CoreEnemyBase.generated.h"
 
-class UCoreEnemyGASDataComponent;
+class UCoreEnemyDataComponent;
 class UCoreEnemyAttributeSet;
 class ACoreAIController;
 struct FCoreEnemyRowData;
@@ -22,15 +22,10 @@ public:
 
 	virtual void BeginPlay() override;
 
-	UCoreEnemyArchetypeData* GetArchetypeData(){ return ArchetypeData; }
-
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
-	TObjectPtr<UCoreEnemyGASDataComponent> EnemyGASDataComponent;
+	TObjectPtr<UCoreEnemyDataComponent> EnemyGASDataComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Attributes")
 	TObjectPtr<UCoreEnemyAttributeSet> EnemyAttributeSet;
-
-	UPROPERTY(EditAnywhere, Category = "CoreGAS|EnemyData")
-	UCoreEnemyArchetypeData* ArchetypeData;
 };

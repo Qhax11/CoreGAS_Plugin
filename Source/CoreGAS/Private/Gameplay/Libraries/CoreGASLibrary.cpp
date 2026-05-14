@@ -4,7 +4,7 @@
 #include "Gameplay/Components/CoreASCBase.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "Gameplay/Data/CoreCharacterData.h"
+#include "Gameplay/Data/CoreGASData.h"
 #include "Gameplay/Abilities/CoreGameplayAbilityBase.h"
 #include "GameplayEffect.h"
 #include "Engine/DataTable.h"
@@ -14,7 +14,7 @@ UCoreASCBase* UCoreGASLibrary::GetCoreASCFromActor(AActor* Actor)
 	return Actor ? Actor->FindComponentByClass<UCoreASCBase>() : nullptr;
 }
 
-void UCoreGASLibrary::ApplyCharacterData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreCharacterData* Data)
+void UCoreGASLibrary::ApplyGASData(UCoreASCBase* ASC, UAttributeSet* AttributeSet, UCoreGASData* Data)
 {
 	if (!ASC || !AttributeSet || !Data)
 	{
@@ -27,23 +27,32 @@ void UCoreGASLibrary::ApplyCharacterData(UCoreASCBase* ASC, UAttributeSet* Attri
 		AttributeSet->InitFromMetaDataTable(InitTable);
 	}
 
-	// Grant startup abilities
-	for (const TSubclassOf<UCoreGameplayAbilityBase>& AbilityClass : Data->StartupAbilities)
+	auto GrantAbilities = [&](const TArray<TSubclassOf<UCoreGameplayAbilityBase>>& Abilities)
 	{
-		if (AbilityClass)
+		for (const auto& AbilityClass : Abilities)
 		{
-			FGameplayAbilitySpec Spec(AbilityClass, 1);
-			if (const UCoreGameplayAbilityBase* CDO = AbilityClass->GetDefaultObject<UCoreGameplayAbilityBase>())
+			if (AbilityClass)
 			{
-				if (CDO->AbilityInputTag.IsValid())
+				FGameplayAbilitySpec Spec(AbilityClass, 1);
+				if (const UCoreGameplayAbilityBase* CDO = AbilityClass->GetDefaultObject<UCoreGameplayAbilityBase>())
 				{
-					UE_LOG(LogTemp, Warning, TEXT("UCoreGASLibrary: debug: tag name: %s"), *CDO->AbilityInputTag.ToString());
-					Spec.DynamicAbilityTags.AddTag(CDO->AbilityInputTag);
+					if (CDO->AbilityInputTag.IsValid())
+					{
+						UE_LOG(LogTemp, Warning, TEXT("UCoreGASLibrary: debug: tag name: %s"), *CDO->AbilityInputTag.ToString());
+						Spec.DynamicAbilityTags.AddTag(CDO->AbilityInputTag);
+					}
 				}
+				ASC->GiveAbility(Spec);
 			}
-			ASC->GiveAbility(Spec);
 		}
-	}
+	};
+
+	GrantAbilities(Data->AttackAbilities);
+	GrantAbilities(Data->ComboAbilities);
+	GrantAbilities(Data->ReactionAbilities);
+	GrantAbilities(Data->MovementAbilities);
+	GrantAbilities(Data->PassiveAbilities);
+	GrantAbilities(Data->UtilityAbilities);
 
 	// Apply startup effects
 	for (const TSubclassOf<UGameplayEffect>& EffectClass : Data->StartupEffects)

@@ -2,6 +2,7 @@
 
 #include "Gameplay/AI/BehaviorDecision/Services/CoreAttackDecisionService.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 
 void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams& Params)
 {
@@ -42,10 +43,11 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 			}
 		}
 
+		float Distance = 0.f;
 		float DistanceScore = -1.f;
 		if (CachedOwner && CachedTarget)
 		{
-			const float Distance = FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
+			Distance = FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
 			if (Distance < MinRange)
 			{
 				DistanceScore = -1.f;
@@ -62,6 +64,7 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 		}
 
 		const float TotalScore = DistanceScore + Data->ScoreBias;
+		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Attack: %s | Distance: %.1f | Score: %.2f"), *Data->AttackName.ToString(), Distance, TotalScore);
 		if (TotalScore > BestScore)
 		{
 			BestScore = TotalScore;

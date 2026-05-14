@@ -4,9 +4,7 @@
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/CoreAIEventHandler.h"
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
-#include "Gameplay/AI/BehaviorDecision/Data/CoreEnemyArchetypeData.h"
 #include "Gameplay/Components/CoreASCBase.h"
-#include "Gameplay/Characters/Enemy/CoreEnemyBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "AbilitySystemComponent.h"
 
@@ -31,11 +29,6 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 		{
 			SpawnSubsystem->OnHeroSpawn.AddDynamic(this, &ACoreAIController::OnHeroSpawned);
 		}
-	}
-
-	if (ACoreEnemyBase* Enemy = Cast<ACoreEnemyBase>(InPawn))
-	{
-		BehaviorDecision->SetArchetypeData(Enemy->GetArchetypeData());
 	}
 }
 

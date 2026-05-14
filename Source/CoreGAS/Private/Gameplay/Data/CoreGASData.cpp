@@ -1,3 +1,3 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Gameplay/Data/CoreHeroData.h"
+#include "Gameplay/Data/CoreGASData.h"
