@@ -40,3 +40,11 @@ void UCoreState_Attack::OnEnter(UCoreStateManager* StateManager)
 	AbilityClass = SimpleAttack->AbilityClass;
 	Super::OnEnter(StateManager);
 }
+
+void UCoreState_Attack::OnAbilityEnded()
+{
+	if (Context.BehaviorDecision)
+	{
+		RequestTransition(Context.BehaviorDecision->DecideNextState());
+	}
+}

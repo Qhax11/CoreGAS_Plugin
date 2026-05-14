@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/AI/BehaviorDecision/Services/CoreAttackDecisionService.h"
+#include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
 
 void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams& Params)
 {
@@ -17,7 +18,7 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 
 	for (const TInstancedStruct<FCoreAttackDataBase>& Option : AttackOptions)
 	{
-		const FCoreAttackDataBase* Data = Option.GetPtr();
+		const FCoreAttackDataBase* Data = Option.GetPtr<FCoreAttackDataBase>();
 		if (!Data)
 		{
 			continue;
@@ -28,22 +29,34 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 			continue;
 		}
 
+		float MinRange = 50.f;
+		float MaxRange = 150.f;
+
+		const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(Data);
+		if (SimpleAttack && SimpleAttack->AbilityClass)
+		{
+			if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
+			{
+				MinRange = CDO->MinRange;
+				MaxRange = CDO->MaxRange;
+			}
+		}
+
 		float DistanceScore = -1.f;
 		if (CachedOwner && CachedTarget)
 		{
 			const float Distance = FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
-
-			if (Distance < Data->MinRange)
+			if (Distance < MinRange)
 			{
 				DistanceScore = -1.f;
 			}
-			else if (Distance > Data->MaxRange)
+			else if (Distance > MaxRange)
 			{
 				DistanceScore = -0.5f;
 			}
 			else
 			{
-				const float NormalizedDist = (Distance - Data->MinRange) / (Data->MaxRange - Data->MinRange);
+				const float NormalizedDist = (Distance - MinRange) / (MaxRange - MinRange);
 				DistanceScore = FMath::Lerp(-1.f, 1.f, NormalizedDist);
 			}
 		}
@@ -51,10 +64,19 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 		const float TotalScore = DistanceScore + Data->ScoreBias;
 		if (TotalScore > BestScore)
 		{
-			BestScore  = TotalScore;
+			BestScore = TotalScore;
 			BestAttack = Data;
 		}
 	}
 
 	return BestAttack;
+}
+
+float UCoreAttackDecisionService::GetDistanceToTarget() const
+{
+	if (!CachedOwner || !CachedTarget)
+	{
+		return MAX_FLT;
+	}
+	return FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
 }

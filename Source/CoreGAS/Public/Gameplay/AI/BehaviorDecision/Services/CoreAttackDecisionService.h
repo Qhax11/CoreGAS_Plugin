@@ -34,6 +34,7 @@ class COREGAS_API UCoreAttackDecisionService : public UObject
 public:
 	virtual void Initialize(const FCoreDecisionServiceInitParams& Params);
 	const FCoreAttackDataBase* GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions);
+	float GetDistanceToTarget() const;
 
 protected:
 	UPROPERTY()

@@ -28,6 +28,7 @@ public:
 	void SetArchetypeData(UCoreEnemyArchetypeData* ArchetypeData);
 	const FCoreAttackDataBase* GetBestAttack();
 	const FCoreAttackDataBase* GetSelectedAttack() const;
+	FGameplayTag DecideNextState() const;
 
 	UPROPERTY()
 	TObjectPtr<UCoreEnemyArchetypeData> CachedArchetypeData;
