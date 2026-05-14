@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/Abilities/CoreGameplayAbility_Montage.h"
+#include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
 #include "CoreGameplayAbility_Projectile.generated.h"
 
 class ACoreProjectile;
 class UGameplayEffect;
 
 UCLASS()
-class COREGAS_API UCoreGameplayAbility_Projectile : public UCoreGameplayAbility_Montage
+class COREGAS_API UCoreGameplayAbility_Projectile : public UCoreGameplayAbility_AttackBase
 {
 	GENERATED_BODY()
 

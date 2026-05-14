@@ -21,7 +21,6 @@ public:
 	ACoreAIController();
 
 	UCoreStateManager* GetStateManager() const { return StateManager; }
-	void InitializeBehavior(UCoreEnemyArchetypeData* ArchetypeData);
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;

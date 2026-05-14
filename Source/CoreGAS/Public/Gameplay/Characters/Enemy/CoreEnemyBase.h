@@ -22,10 +22,15 @@ public:
 
 	virtual void BeginPlay() override;
 
+	UCoreEnemyArchetypeData* GetArchetypeData(){ return ArchetypeData; }
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
 	TObjectPtr<UCoreEnemyGASDataComponent> EnemyGASDataComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Attributes")
 	TObjectPtr<UCoreEnemyAttributeSet> EnemyAttributeSet;
+
+	UPROPERTY(EditAnywhere, Category = "CoreGAS|EnemyData")
+	UCoreEnemyArchetypeData* ArchetypeData;
 };

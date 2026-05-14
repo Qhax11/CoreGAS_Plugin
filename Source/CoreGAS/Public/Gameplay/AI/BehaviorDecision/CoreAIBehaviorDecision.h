@@ -27,7 +27,11 @@ public:
 	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC);
 	void SetArchetypeData(UCoreEnemyArchetypeData* ArchetypeData);
 	const FCoreAttackDataBase* GetBestAttack();
+	const FCoreAttackDataBase* GetSelectedAttack() const;
 
 	UPROPERTY()
 	TObjectPtr<UCoreEnemyArchetypeData> CachedArchetypeData;
+
+private:
+	const FCoreAttackDataBase* SelectedAttack = nullptr;
 };

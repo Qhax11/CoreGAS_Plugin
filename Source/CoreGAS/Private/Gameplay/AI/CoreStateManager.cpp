@@ -54,6 +54,8 @@ void UCoreStateManager::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, A
 		NewState->InitializeContext(StateContext);
 		StateInstances.Add(NewState);
 	}
+
+	StartLogic();
 }
 
 void UCoreStateManager::RequestStateEnter(FGameplayTag StateTag)

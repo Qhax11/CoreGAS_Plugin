@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Gameplay/Abilities/CoreGameplayAbility_Montage.h"
+#include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
 #include "CoreGameplayAbility_MeleeAttack.generated.h"
 
 class UCoreAbilityTask_PerformTrace;
@@ -12,7 +12,7 @@ class ACoreWeaponBase;
 class UGameplayEffect;
 
 UCLASS()
-class COREGAS_API UCoreGameplayAbility_MeleeAttack : public UCoreGameplayAbility_Montage
+class COREGAS_API UCoreGameplayAbility_MeleeAttack : public UCoreGameplayAbility_AttackBase
 {
 	GENERATED_BODY()
 

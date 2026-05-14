@@ -21,7 +21,7 @@ void UCoreState_Attack::OnEnter(UCoreStateManager* StateManager)
 		return;
 	}
 
-	const FCoreAttackDataBase* BestAttack = BD->GetBestAttack();
+	const FCoreAttackDataBase* BestAttack = BD->GetSelectedAttack();
 
 	if (!BestAttack)
 	{

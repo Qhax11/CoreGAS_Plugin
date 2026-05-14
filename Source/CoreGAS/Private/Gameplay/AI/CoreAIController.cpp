@@ -6,6 +6,7 @@
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreEnemyArchetypeData.h"
 #include "Gameplay/Components/CoreASCBase.h"
+#include "Gameplay/Characters/Enemy/CoreEnemyBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "AbilitySystemComponent.h"
 
@@ -31,6 +32,11 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 			SpawnSubsystem->OnHeroSpawn.AddDynamic(this, &ACoreAIController::OnHeroSpawned);
 		}
 	}
+
+	if (ACoreEnemyBase* Enemy = Cast<ACoreEnemyBase>(InPawn))
+	{
+		BehaviorDecision->SetArchetypeData(Enemy->GetArchetypeData());
+	}
 }
 
 void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
@@ -38,23 +44,10 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 	APawn* CachedPawn = GetPawn();
 	UCoreASCBase* OwnerASC = CachedPawn ? CachedPawn->FindComponentByClass<UCoreASCBase>() : nullptr;
 
-	EventHandler->Initialize(StateManager, OwnerASC);
-
-	StateManager->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, BehaviorDecision);
-
 	UAbilitySystemComponent* TargetASC = Cast<UAbilitySystemComponent>(HeroSpawnData.HeroActor->FindComponentByClass<UAbilitySystemComponent>());
 	BehaviorDecision->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, TargetASC);
-}
-
-void ACoreAIController::InitializeBehavior(UCoreEnemyArchetypeData* ArchetypeData)
-{
-	if (!ArchetypeData)
-	{
-		return;
-	}
-
-	BehaviorDecision->SetArchetypeData(ArchetypeData);
-	StateManager->StartLogic();
+	EventHandler->Initialize(StateManager, OwnerASC);
+	StateManager->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, BehaviorDecision);
 }
 
 void ACoreAIController::OnUnPossess()

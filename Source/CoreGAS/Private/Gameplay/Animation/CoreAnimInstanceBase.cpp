@@ -24,5 +24,5 @@ void UCoreAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 	Velocity    = OwnerMovementComponent->Velocity;
 	GroundSpeed = FVector(Velocity.X, Velocity.Y, 0.f).Size();
 	bIsFalling  = OwnerMovementComponent->IsFalling();
-	bShouldMove = GroundSpeed > 3.f && !OwnerMovementComponent->GetCurrentAcceleration().IsZero();
+	bShouldMove = GroundSpeed > 3.f;
 }

@@ -16,12 +16,6 @@ struct COREGAS_API FCoreAttackDataBase
 	FName AttackName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
-	float MinRange = 100.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
-	float MaxRange = 300.f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
 	float ScoreBias = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (Categories = "Ability.Cooldown"))

@@ -33,7 +33,11 @@ void UCoreGameplayAbility_AIMovement::ActivateAbility(const FGameplayAbilitySpec
 		return;
 	}
 
-	MoveTask = UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(this, AIController, Target, AcceptanceRadius);
+	const float Radius = (TriggerEventData && TriggerEventData->EventMagnitude > 0.f)
+		? TriggerEventData->EventMagnitude
+		: AcceptanceRadius;
+
+	MoveTask = UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(this, AIController, Target, Radius);
 	MoveTask->OnCompleted.AddDynamic(this, &UCoreGameplayAbility_AIMovement::OnMoveCompleted);
 	MoveTask->OnAborted.AddDynamic(this,   &UCoreGameplayAbility_AIMovement::OnMoveAborted);
 	MoveTask->OnFailed.AddDynamic(this,    &UCoreGameplayAbility_AIMovement::OnMoveFailed);

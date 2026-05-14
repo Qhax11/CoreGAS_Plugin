@@ -33,6 +33,7 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 	}
 
 	const FCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
+	SelectedAttack = Result;
 
 	if (bEnableDebug && Result)
 	{
@@ -40,4 +41,9 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 	}
 
 	return Result;
+}
+
+const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetSelectedAttack() const
+{
+	return SelectedAttack;
 }
