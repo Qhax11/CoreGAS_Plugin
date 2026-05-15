@@ -5,7 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Abilities/GameplayAbility.h"
+#include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovementBase.h"
 #include "CoreAttackData.generated.h"
+
+class UCoreGameplayAbility_AIMovementBase;
 
 USTRUCT(BlueprintType)
 struct COREGAS_API FCoreAttackDataBase
@@ -20,6 +23,9 @@ struct COREGAS_API FCoreAttackDataBase
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (Categories = "Ability.Cooldown"))
 	FGameplayTag CooldownTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
+	TSubclassOf<UCoreGameplayAbility_AIMovementBase> MovementAbilityClass;
 };
 
 USTRUCT(BlueprintType)

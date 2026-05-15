@@ -7,8 +7,6 @@
 #include "GameplayAbilitySpec.h"
 #include "CoreState_Movement.generated.h"
 
-class UCoreGameplayAbility_AIMovement;
-
 UCLASS()
 class COREGAS_API UCoreState_Movement : public UCoreStateBase
 {
@@ -16,9 +14,6 @@ class COREGAS_API UCoreState_Movement : public UCoreStateBase
 
 public:
 	UCoreState_Movement();
-
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
-	TSubclassOf<UCoreGameplayAbility_AIMovement> MovementAbilityClass;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
 	float AcceptanceRadius = 50.f;

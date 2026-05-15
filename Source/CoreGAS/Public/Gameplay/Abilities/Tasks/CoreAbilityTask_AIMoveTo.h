@@ -35,6 +35,14 @@ public:
 		AActor* TargetActor,
 		float AcceptanceRadius);
 
+	UFUNCTION(BlueprintCallable, Category = "CoreGAS|AI|Tasks",
+		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
+	static UCoreAbilityTask_AIMoveTo* CreateAIMoveToLocation(
+		UGameplayAbility* OwningAbility,
+		AAIController* Controller,
+		FVector Location,
+		float AcceptanceRadius);
+
 	virtual void Activate() override;
 	virtual void OnDestroy(bool AbilityEnded) override;
 
@@ -45,7 +53,11 @@ private:
 	UPROPERTY()
 	TObjectPtr<AActor> CachedTarget;
 
+	UPROPERTY()
+	FVector CachedLocation;
+
 	float CachedAcceptanceRadius = 50.f;
+	bool bMoveToLocation = false;
 
 	UFUNCTION()
 	void OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result);

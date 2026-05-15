@@ -16,11 +16,25 @@ UCoreAbilityTask_AIMoveTo* UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(
 	return Task;
 }
 
+UCoreAbilityTask_AIMoveTo* UCoreAbilityTask_AIMoveTo::CreateAIMoveToLocation(
+	UGameplayAbility* OwningAbility,
+	AAIController* Controller,
+	FVector Location,
+	float AcceptanceRadius)
+{
+	UCoreAbilityTask_AIMoveTo* Task = NewAbilityTask<UCoreAbilityTask_AIMoveTo>(OwningAbility);
+	Task->CachedController       = Controller;
+	Task->CachedLocation         = Location;
+	Task->CachedAcceptanceRadius = AcceptanceRadius;
+	Task->bMoveToLocation        = true;
+	return Task;
+}
+
 void UCoreAbilityTask_AIMoveTo::Activate()
 {
-	if (!CachedController || !CachedTarget)
+	if (!CachedController || (!bMoveToLocation && !CachedTarget))
 	{
-		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] Activate FAILED — Controller:%s Target:%s"),
+		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] Activate FAILED â€” Controller:%s Target:%s"),
 			CachedController ? TEXT("OK") : TEXT("NULL"),
 			CachedTarget ? TEXT("OK") : TEXT("NULL"));
 		if (ShouldBroadcastAbilityTaskDelegates()) OnFailed.Broadcast();
@@ -30,12 +44,23 @@ void UCoreAbilityTask_AIMoveTo::Activate()
 
 	CachedController->ReceiveMoveCompleted.AddDynamic(this, &UCoreAbilityTask_AIMoveTo::OnMoveCompleted);
 
-	const EPathFollowingRequestResult::Type Result =
-		CachedController->MoveToActor(CachedTarget, CachedAcceptanceRadius);
+	EPathFollowingRequestResult::Type Result;
+	if (bMoveToLocation)
+	{
+		Result = CachedController->MoveToLocation(CachedLocation, CachedAcceptanceRadius);
+		UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] MoveToLocation started â€” Location:%s Radius:%.1f"),
+			*CachedLocation.ToString(), CachedAcceptanceRadius);
+	}
+	else
+	{
+		Result = CachedController->MoveToActor(CachedTarget, CachedAcceptanceRadius);
+		UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] MoveToActor started â€” Target:%s Radius:%.1f"),
+			*CachedTarget->GetName(), CachedAcceptanceRadius);
+	}
 
 	if (Result == EPathFollowingRequestResult::AlreadyAtGoal)
 	{
-		UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] AlreadyAtGoal — broadcasting Completed"));
+		UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] AlreadyAtGoal â€” broadcasting Completed"));
 		CachedController->ReceiveMoveCompleted.RemoveDynamic(this, &UCoreAbilityTask_AIMoveTo::OnMoveCompleted);
 		if (ShouldBroadcastAbilityTaskDelegates()) OnCompleted.Broadcast();
 		EndTask();
@@ -44,20 +69,17 @@ void UCoreAbilityTask_AIMoveTo::Activate()
 
 	if (Result == EPathFollowingRequestResult::Failed)
 	{
-		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] MoveToActor FAILED"));
+		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] Move FAILED"));
 		CachedController->ReceiveMoveCompleted.RemoveDynamic(this, &UCoreAbilityTask_AIMoveTo::OnMoveCompleted);
 		if (ShouldBroadcastAbilityTaskDelegates()) OnFailed.Broadcast();
 		EndTask();
 		return;
 	}
-
-	UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] MoveToActor started — Target:%s Radius:%.1f"),
-		*CachedTarget->GetName(), CachedAcceptanceRadius);
 }
 
 void UCoreAbilityTask_AIMoveTo::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
-	UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] OnMoveCompleted — Result:%d"), static_cast<int32>(Result));
+	UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] OnMoveCompleted ï¿½ Result:%d"), static_cast<int32>(Result));
 
 	if (!ShouldBroadcastAbilityTaskDelegates())
 	{

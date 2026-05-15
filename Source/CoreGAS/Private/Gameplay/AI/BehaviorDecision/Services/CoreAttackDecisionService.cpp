@@ -81,5 +81,6 @@ float UCoreAttackDecisionService::GetDistanceToTarget() const
 	{
 		return MAX_FLT;
 	}
+
 	return FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
 }
