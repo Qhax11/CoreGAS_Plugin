@@ -15,6 +15,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Motion Warping")
 	float StopDistanceFromTarget = 150.f;
 
+	UPROPERTY(EditAnywhere, Category = "Motion Warping")
+	bool bUpdateWarpTargetOnTick = false;
+
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 		float TotalDuration, const FAnimNotifyEventReference& EventReference) override;
+	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+		float FrameDeltaTime, const FAnimNotifyEventReference& EventReference) override;
+
+#if WITH_EDITOR
+	virtual bool CanEditChange(const FProperty* InProperty) const override;
+#endif
+
+private:
+	void UpdateWarpTarget(USkeletalMeshComponent* MeshComp);
 };

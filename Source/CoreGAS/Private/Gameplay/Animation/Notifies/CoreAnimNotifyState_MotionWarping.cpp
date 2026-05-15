@@ -10,40 +10,70 @@
 void UCoreAnimNotifyState_MotionWarping::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
-	AActor* Owner = MeshComp ? MeshComp->GetOwner() : nullptr;
-	if (Owner)
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	UpdateWarpTarget(MeshComp);
+}
+
+void UCoreAnimNotifyState_MotionWarping::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+{
+	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+
+	if (bUpdateWarpTargetOnTick) 
 	{
-		ICoreCombatInterface* CombatInterface = Cast<ICoreCombatInterface>(Owner);
-		AActor* Target = CombatInterface ? CombatInterface->GetCurrentTarget() : nullptr;
-		if (IsValid(Target))
-		{
-			UMotionWarpingComponent* WarpComp = Owner->FindComponentByClass<UMotionWarpingComponent>();
-			URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
-			if (WarpComp && WarpModifier)
-			{
-				const FVector OwnerLocation  = Owner->GetActorLocation();
-				const FVector TargetLocation = Target->GetActorLocation();
-				const FVector ToTarget       = TargetLocation - OwnerLocation;
-				const FVector WarpLocation   = TargetLocation - ToTarget.GetSafeNormal() * StopDistanceFromTarget;
+		UpdateWarpTarget(MeshComp);
+	}
+}
 
-				FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerLocation, TargetLocation);
-				LookAtRotation.Pitch = 0.f;
-				LookAtRotation.Roll  = 0.f;
+#if WITH_EDITOR
+bool UCoreAnimNotifyState_MotionWarping::CanEditChange(const FProperty* InProperty) const
+{
+	const bool ParentVal = Super::CanEditChange(InProperty);
 
-				WarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(
-					WarpModifier->WarpTargetName, WarpLocation, LookAtRotation);
-			}
-		}
-		else
-		{
-			UMotionWarpingComponent* WarpComp = Owner->FindComponentByClass<UMotionWarpingComponent>();
-			URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
-			if (WarpComp && WarpModifier)
-			{
-				WarpComp->RemoveWarpTarget(WarpModifier->WarpTargetName);
-			}
-		}
+	if (InProperty && InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UCoreAnimNotifyState_MotionWarping, StopDistanceFromTarget))
+	{
+		const URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
+		return ParentVal && WarpModifier && WarpModifier->bWarpTranslation;
 	}
 
-	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
+	return ParentVal;
+}
+#endif
+
+void UCoreAnimNotifyState_MotionWarping::UpdateWarpTarget(USkeletalMeshComponent* MeshComp)
+{
+	AActor* Owner = MeshComp ? MeshComp->GetOwner() : nullptr;
+	if (!Owner)
+	{
+		return;
+	}
+
+	ICoreCombatInterface* CombatInterface = Cast<ICoreCombatInterface>(Owner);
+	AActor* Target = CombatInterface ? CombatInterface->GetCurrentTarget() : nullptr;
+
+	UMotionWarpingComponent* WarpComp = Owner->FindComponentByClass<UMotionWarpingComponent>();
+	URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
+
+	if (!WarpComp || !WarpModifier)
+	{
+		return;
+	}
+
+	if (!IsValid(Target))
+	{
+		WarpComp->RemoveWarpTarget(WarpModifier->WarpTargetName);
+		return;
+	}
+
+	const FVector OwnerLocation  = Owner->GetActorLocation();
+	const FVector TargetLocation = Target->GetActorLocation();
+	const FVector ToTarget       = TargetLocation - OwnerLocation;
+	const FVector WarpLocation   = TargetLocation - ToTarget.GetSafeNormal() * StopDistanceFromTarget;
+
+	FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(OwnerLocation, TargetLocation);
+	LookAtRotation.Pitch = 0.f;
+	LookAtRotation.Roll  = 0.f;
+
+	WarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(
+		WarpModifier->WarpTargetName, WarpLocation, LookAtRotation);
 }
