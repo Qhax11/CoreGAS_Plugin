@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/AI/States/CoreStateBase.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 
 void UCoreStateBase::InitializeContext(const FCoreStateContext& InContext)
 {
@@ -28,8 +29,22 @@ bool UCoreStateBase::EnterCondition(UCoreStateManager* StateManager) const
 
 void UCoreStateBase::RequestTransition(FGameplayTag TargetTag)
 {
-	if (CachedStateManager)
-	{
-		CachedStateManager->RequestStateEnter(TargetTag);
-	}
+    if (!CachedStateManager)
+    {
+        CORE_AI_LOG(LogCoreAI, Warning, "RequestTransition FAILED — CachedStateManager is NULL | From: %s | To: %s",
+            *StateTag.ToString(), *TargetTag.ToString());
+        return;
+    }
+
+    if (!TargetTag.IsValid())
+    {
+        CORE_AI_LOG(LogCoreAI, Warning, "RequestTransition FAILED — TargetTag is INVALID | From: %s",
+            *StateTag.ToString());
+        return;
+    }
+
+    CORE_AI_LOG(LogCoreAI, Log, "RequestTransition — From: %s | To: %s",
+        *StateTag.ToString(), *TargetTag.ToString());
+
+    CachedStateManager->RequestStateEnter(TargetTag);
 }

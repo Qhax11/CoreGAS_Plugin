@@ -6,13 +6,14 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "Gameplay/Interfaces/CoreAbilitySystemInterface.h"
+#include "Gameplay/Interfaces/ICoreCombatInterface.h"
 #include "MotionWarpingComponent.h"
 #include "CoreCharacterBase.generated.h"
 
 class UCoreEquipmentComponent;
 
 UCLASS()
-class COREGAS_API ACoreCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICoreAbilitySystemInterface
+class COREGAS_API ACoreCharacterBase : public ACharacter, public IAbilitySystemInterface, public ICoreAbilitySystemInterface, public ICoreCombatInterface
 {
 	GENERATED_BODY()
 

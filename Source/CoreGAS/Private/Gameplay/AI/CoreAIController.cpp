@@ -37,6 +37,8 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 	APawn* CachedPawn = GetPawn();
 	UCoreASCBase* OwnerASC = CachedPawn ? CachedPawn->FindComponentByClass<UCoreASCBase>() : nullptr;
 
+	CurrentTarget = HeroSpawnData.HeroActor;
+
 	UAbilitySystemComponent* TargetASC = Cast<UAbilitySystemComponent>(HeroSpawnData.HeroActor->FindComponentByClass<UAbilitySystemComponent>());
 	BehaviorDecision->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, TargetASC);
 	EventHandler->Initialize(StateManager, OwnerASC);
@@ -45,10 +47,17 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 
 void ACoreAIController::OnUnPossess()
 {
+	CurrentTarget = nullptr;
+
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())
 	{
 		SpawnSubsystem->OnHeroSpawn.RemoveDynamic(this, &ACoreAIController::OnHeroSpawned);
 	}
 
 	Super::OnUnPossess();
+}
+
+AActor* ACoreAIController::GetCurrentTarget() const
+{
+	return CurrentTarget;
 }

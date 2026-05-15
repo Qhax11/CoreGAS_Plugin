@@ -21,6 +21,7 @@ public:
 	virtual UCoreASCBase* GetCoreAbilitySystemComponent() const override;
 
 	virtual void BeginPlay() override;
+	virtual AActor* GetCurrentTarget() const override;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")

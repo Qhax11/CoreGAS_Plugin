@@ -33,3 +33,9 @@ void ACoreEnemyBase::BeginPlay()
 
 	EnemyGASDataComponent->Initialize(AbilitySystemComponent, EnemyAttributeSet);
 }
+
+AActor* ACoreEnemyBase::GetCurrentTarget() const
+{
+	ACoreAIController* AI = Cast<ACoreAIController>(GetController());
+	return AI ? AI->GetCurrentTarget() : nullptr;
+}

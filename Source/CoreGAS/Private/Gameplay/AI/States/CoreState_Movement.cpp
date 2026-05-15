@@ -17,43 +17,71 @@ UCoreState_Movement::UCoreState_Movement()
 
 void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 {
-	Super::OnEnter(StateManager);
+    Super::OnEnter(StateManager);
 
-	if (!MovementAbilityClass || !Context.TargetActor || !Context.BehaviorDecision)
-	{
-		return;
-	}
+    if (!MovementAbilityClass || !Context.TargetActor || !Context.BehaviorDecision)
+    {
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED — MovementAbilityClass:%s TargetActor:%s BehaviorDecision:%s",
+            MovementAbilityClass ? TEXT("OK") : TEXT("NULL"),
+            Context.TargetActor ? TEXT("OK") : TEXT("NULL"),
+            Context.BehaviorDecision ? TEXT("OK") : TEXT("NULL"));
+        return;
+    }
 
-	UCoreASCBase* ASC = Context.OwnerASC;
-	if (!ASC)
-	{
-		return;
-	}
+    UCoreASCBase* ASC = Context.OwnerASC;
+    if (!ASC)
+    {
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED — OwnerASC is NULL");
+        return;
+    }
 
-	FGameplayEventData EventData;
-	EventData.Target = Context.TargetActor;
+    // Fetch the handle before activation so the listener can be bound first
+    FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(MovementAbilityClass);
+    if (!Spec)
+    {
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED — AbilitySpec not found");
+        return;
+    }
+    ActiveAbilityHandle = Spec->Handle;
 
-	const FCoreAttackDataBase* BestAttack = Context.BehaviorDecision->GetBestAttack();
-	const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
-	if (SimpleAttack && SimpleAttack->AbilityClass)
-	{
-		UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
-		EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
-		UE_LOG(LogCoreAIMovement, Log, TEXT("[Movement] AcceptanceRadius set to: %.1f"), EventData.EventMagnitude);
-	}
+    // Bind the listener before activating to avoid missing AlreadyAtGoal completions
+    EndListenerHandle = ASC->ListenForAbilityEndedByHandle(ActiveAbilityHandle, [this](const FAbilityEndedData& EndData)
+        {
+            CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended — bWasCancelled:%s",
+                EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
 
-	if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementAbilityClass, ActiveAbilityHandle, EventData))
-	{
-		return;
-	}
+            if (TransitionTag.IsValid())
+            {
+                RequestTransition(TransitionTag);
+            }
+            else
+            {
+                CORE_AI_LOG(LogCoreAIMovement, Warning, "Ability ended but TransitionTag is INVALID");
+            }
+        });
 
-	EndListenerHandle = ASC->ListenForAbilityEndedByHandle(ActiveAbilityHandle, [this](const FAbilityEndedData&)
-	{
-		if (TransitionTag.IsValid())
-		{
-			RequestTransition(TransitionTag);
-		}
-	});
+    FGameplayEventData EventData;
+    EventData.Target = Context.TargetActor;
+
+    const FCoreAttackDataBase* BestAttack = Context.BehaviorDecision->GetBestAttack();
+    const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
+    if (SimpleAttack && SimpleAttack->AbilityClass)
+    {
+        UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
+        EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
+        CORE_AI_LOG(LogCoreAIMovement, Log, "AcceptanceRadius set to: %.1f", EventData.EventMagnitude);
+    }
+
+    // Activate after listener is bound — handles AlreadyAtGoal completing synchronously
+    if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementAbilityClass, ActiveAbilityHandle, EventData))
+    {
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "ActivateAbility FAILED — ability did not activate");
+        ASC->StopListeningForAbilityEnded(EndListenerHandle);
+        EndListenerHandle = FDelegateHandle();
+        return;
+    }
+
+    CORE_AI_LOG(LogCoreAIMovement, Log, "Ability activated. Listening for end...");
 }
 
 void UCoreState_Movement::OnExit(UCoreStateManager* StateManager)

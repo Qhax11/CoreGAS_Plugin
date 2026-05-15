@@ -22,6 +22,7 @@ public:
 
 	UCoreStateManager* GetStateManager() const { return StateManager; }
 	UCoreAIBehaviorDecision* GetBehaviorDecision() const { return BehaviorDecision; }
+	AActor* GetCurrentTarget() const;
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -35,6 +36,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UCoreAIBehaviorDecision> BehaviorDecision;
+
+	UPROPERTY()
+	TObjectPtr<AActor> CurrentTarget;
 
 private:
 	UFUNCTION()

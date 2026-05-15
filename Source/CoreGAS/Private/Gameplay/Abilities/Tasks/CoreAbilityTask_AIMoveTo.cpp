@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_AIMoveTo.h"
+#include "Gameplay/Debug/CoreGameplayLog.h"
 
 UCoreAbilityTask_AIMoveTo* UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(
 	UGameplayAbility* OwningAbility,
@@ -19,10 +20,10 @@ void UCoreAbilityTask_AIMoveTo::Activate()
 {
 	if (!CachedController || !CachedTarget)
 	{
-		if (ShouldBroadcastAbilityTaskDelegates())
-		{
-			OnFailed.Broadcast();
-		}
+		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] Activate FAILED — Controller:%s Target:%s"),
+			CachedController ? TEXT("OK") : TEXT("NULL"),
+			CachedTarget ? TEXT("OK") : TEXT("NULL"));
+		if (ShouldBroadcastAbilityTaskDelegates()) OnFailed.Broadcast();
 		EndTask();
 		return;
 	}
@@ -32,20 +33,32 @@ void UCoreAbilityTask_AIMoveTo::Activate()
 	const EPathFollowingRequestResult::Type Result =
 		CachedController->MoveToActor(CachedTarget, CachedAcceptanceRadius);
 
+	if (Result == EPathFollowingRequestResult::AlreadyAtGoal)
+	{
+		UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] AlreadyAtGoal — broadcasting Completed"));
+		CachedController->ReceiveMoveCompleted.RemoveDynamic(this, &UCoreAbilityTask_AIMoveTo::OnMoveCompleted);
+		if (ShouldBroadcastAbilityTaskDelegates()) OnCompleted.Broadcast();
+		EndTask();
+		return;
+	}
+
 	if (Result == EPathFollowingRequestResult::Failed)
 	{
+		UE_LOG(LogCoreAIMovement, Warning, TEXT("[AIMoveTo] MoveToActor FAILED"));
 		CachedController->ReceiveMoveCompleted.RemoveDynamic(this, &UCoreAbilityTask_AIMoveTo::OnMoveCompleted);
-
-		if (ShouldBroadcastAbilityTaskDelegates())
-		{
-			OnFailed.Broadcast();
-		}
+		if (ShouldBroadcastAbilityTaskDelegates()) OnFailed.Broadcast();
 		EndTask();
+		return;
 	}
+
+	UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] MoveToActor started — Target:%s Radius:%.1f"),
+		*CachedTarget->GetName(), CachedAcceptanceRadius);
 }
 
 void UCoreAbilityTask_AIMoveTo::OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result)
 {
+	UE_LOG(LogCoreAIMovement, Log, TEXT("[AIMoveTo] OnMoveCompleted — Result:%d"), static_cast<int32>(Result));
+
 	if (!ShouldBroadcastAbilityTaskDelegates())
 	{
 		EndTask();

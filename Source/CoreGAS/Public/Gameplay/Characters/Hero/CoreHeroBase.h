@@ -21,6 +21,7 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual UCoreASCBase* GetCoreAbilitySystemComponent() const override;
+	virtual AActor* GetCurrentTarget() const override;
 
 protected:
 	virtual void BeginPlay() override;

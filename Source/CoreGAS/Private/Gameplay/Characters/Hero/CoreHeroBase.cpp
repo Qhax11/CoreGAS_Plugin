@@ -15,6 +15,11 @@ UCoreASCBase* ACoreHeroBase::GetCoreAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+AActor* ACoreHeroBase::GetCurrentTarget() const
+{
+	return TargetingComponent ? TargetingComponent->GetCurrentTarget() : nullptr;
+}
+
 ACoreHeroBase::ACoreHeroBase()
 {
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
