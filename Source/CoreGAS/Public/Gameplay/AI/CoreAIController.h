@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Gameplay/Subsystems/CoreSpawnSubsystem.h"
 #include "CoreAIController.generated.h"
 
@@ -18,7 +19,7 @@ class COREGAS_API ACoreAIController : public AAIController
 	GENERATED_BODY()
 
 public:
-	ACoreAIController();
+	ACoreAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 	UCoreStateManager* GetStateManager() const { return StateManager; }
 	UCoreAIBehaviorDecision* GetBehaviorDecision() const { return BehaviorDecision; }

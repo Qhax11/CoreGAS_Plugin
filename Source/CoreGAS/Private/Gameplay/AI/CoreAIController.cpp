@@ -7,8 +7,10 @@
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "AbilitySystemComponent.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-ACoreAIController::ACoreAIController()
+ACoreAIController::ACoreAIController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	StateManager      = CreateDefaultSubobject<UCoreStateManager>(TEXT("StateManager"));
 	EventHandler      = CreateDefaultSubobject<UCoreAIEventHandler>(TEXT("EventHandler"));
@@ -18,6 +20,14 @@ ACoreAIController::ACoreAIController()
 void ACoreAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
+	{
+		CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
+		CrowdComp->SetAvoidanceGroup(1);
+		CrowdComp->SetGroupsToAvoid(1);
+		CrowdComp->SetCrowdCollisionQueryRange(600);
+	}
 
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())
 	{

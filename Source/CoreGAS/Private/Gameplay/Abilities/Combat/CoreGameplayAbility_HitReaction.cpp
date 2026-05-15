@@ -1,6 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_HitReaction.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
 #include "GameFramework/Character.h"
 
@@ -12,6 +13,9 @@ UCoreGameplayAbility_HitReaction::UCoreGameplayAbility_HitReaction()
 	TriggerData.TriggerTag = CoreGAS::Combat::TAG_Event_HitReaction;
 	TriggerData.TriggerSource = EGameplayAbilityTriggerSource::GameplayEvent;
 	AbilityTriggers.Add(TriggerData);
+
+	bCommitCooldownOnActivate = false;
+	bCommitCostOnActivate = false;
 }
 
 void UCoreGameplayAbility_HitReaction::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -29,7 +33,11 @@ void UCoreGameplayAbility_HitReaction::ActivateAbility(const FGameplayAbilitySpe
 			KnockbackDirection = KnockbackDirection.GetSafeNormal();
 		}
 
-		OwnerCharacter->LaunchCharacter(KnockbackDirection * KnockbackForce, true, false);
+		FVector CurrentVelocity = OwnerCharacter->GetCharacterMovement()->Velocity;
+		CurrentVelocity.X = KnockbackDirection.X * KnockbackForce;
+		CurrentVelocity.Y = KnockbackDirection.Y * KnockbackForce;
+
+		OwnerCharacter->GetCharacterMovement()->Velocity = CurrentVelocity;
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
