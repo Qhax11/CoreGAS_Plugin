@@ -21,7 +21,7 @@ struct COREGAS_API FCoreMovementConfigBase : public FGameplayAbilityTargetData
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
+	UPROPERTY()
 	TSubclassOf<UCoreGameplayAbility_AIMovementBase> MovementAbilityClass;
 
 	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }

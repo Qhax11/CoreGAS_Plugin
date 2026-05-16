@@ -61,10 +61,15 @@ void UCoreTargetingComponent::UpdateTarget()
 
 	if (OverlappedActors.IsEmpty()) 
 	{
+
 		if (IsValid(CurrentTarget))
 		{
-			CurrentTarget = nullptr;
-		} 
+			if (UAbilitySystemComponent* OldASC = CurrentTarget->FindComponentByClass<UAbilitySystemComponent>())
+			{
+				OldASC->RemoveLooseGameplayTag(CoreGAS::Character::TAG_State_Targeted);
+				CurrentTarget = nullptr;
+			}
+		}
 
 		return;
 	}
