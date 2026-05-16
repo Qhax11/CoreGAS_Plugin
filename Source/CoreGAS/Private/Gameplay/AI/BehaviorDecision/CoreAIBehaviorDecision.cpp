@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
@@ -12,6 +12,8 @@ UCoreAIBehaviorDecision::UCoreAIBehaviorDecision()
 
 void UCoreAIBehaviorDecision::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC)
 {
+	CachedOwnerActor = OwnerActor;
+
 	AttackDecisionService = NewObject<UCoreAttackDecisionService>(this);
 
 	FCoreDecisionServiceInitParams Params;
@@ -40,17 +42,17 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 
 	UE_LOG(LogCoreAIDecision, Log, TEXT("[BehaviorDecision] GetBestAttack: %s"), Result ? *Result->AttackName.ToString() : TEXT("null"));
 
-	if (bEnableDebug && Result)
-	{
-		UE_LOG(LogTemp, Log, TEXT("[BehaviorDecision] Best attack: %s"), *Result->AttackName.ToString());
-	}
-
 	return Result;
 }
 
 const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetSelectedAttack() const
 {
 	return SelectedAttack;
+}
+
+float UCoreAIBehaviorDecision::GetDistanceToTarget() const
+{
+	return AttackDecisionService ? AttackDecisionService->GetDistanceToTarget() : MAX_FLT;
 }
 
 FGameplayTag UCoreAIBehaviorDecision::DecideNextState() const

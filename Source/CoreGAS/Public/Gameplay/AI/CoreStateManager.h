@@ -18,8 +18,6 @@ class COREGAS_API UCoreStateManager : public UActorComponent
 public:
 	UCoreStateManager();
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
 	TArray<TSubclassOf<UCoreStateBase>> StateClassArray;
 
@@ -35,6 +33,7 @@ public:
 	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UCoreAIBehaviorDecision* BehaviorDecision);
 	void RequestStateEnter(FGameplayTag StateTag);
 	void StartLogic();
+	FGameplayTag GetCurrentStateTag() const;
 
 private:
 	UPROPERTY()

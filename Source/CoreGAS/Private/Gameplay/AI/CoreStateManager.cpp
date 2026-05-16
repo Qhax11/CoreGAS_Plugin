@@ -3,36 +3,10 @@
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/States/CoreStateBase.h"
 #include "Gameplay/Debug/CoreGameplayLog.h"
-#include "DrawDebugHelpers.h"
 
 UCoreStateManager::UCoreStateManager()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-}
-
-void UCoreStateManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (!CurrentState)
-	{
-		return;
-	}
-
-	CurrentState->OnTick(this, DeltaTime);
-
-	if (bEnableDebug)
-	{
-		const FString TagFull = CurrentState->StateTag.ToString();
-		int32 LastDotIndex;
-		const FString TagLabel = TagFull.FindLastChar(TEXT('.'), LastDotIndex)
-			? TagFull.RightChop(LastDotIndex + 1)
-			: TagFull;
-
-		AActor* OwnerActor = StateContext.OwnerActor;
-		const FVector Location = OwnerActor ? OwnerActor->GetActorLocation() + FVector(0.f, 0.f, 150.f) : FVector::ZeroVector;
-		DrawDebugString(GetWorld(), Location, TagLabel, nullptr, FColor::White, 0.f, true);
-	}
+	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UCoreStateManager::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UCoreAIBehaviorDecision* BehaviorDecision)
@@ -88,5 +62,10 @@ void UCoreStateManager::RequestStateEnter(FGameplayTag StateTag)
 void UCoreStateManager::StartLogic()
 {
 	RequestStateEnter(StartState);
+}
+
+FGameplayTag UCoreStateManager::GetCurrentStateTag() const
+{
+	return CurrentState ? CurrentState->StateTag : FGameplayTag();
 }
 

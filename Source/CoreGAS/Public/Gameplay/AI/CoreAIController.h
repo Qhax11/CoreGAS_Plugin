@@ -11,6 +11,7 @@
 class UCoreStateManager;
 class UCoreAIEventHandler;
 class UCoreAIBehaviorDecision;
+class UCoreAIDebugComponent;
 class UCoreEnemyArchetypeData;
 
 UCLASS()
@@ -37,6 +38,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UCoreAIBehaviorDecision> BehaviorDecision;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "CoreGAS|Components")
+	TObjectPtr<UCoreAIDebugComponent> DebugComponent;
 
 	UPROPERTY()
 	TObjectPtr<AActor> CurrentTarget;

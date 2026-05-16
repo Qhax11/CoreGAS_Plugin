@@ -18,9 +18,6 @@ class COREGAS_API UCoreAIBehaviorDecision : public UActorComponent
 public:
 	UCoreAIBehaviorDecision();
 
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Debug")
-	bool bEnableDebug = true;
-
 	UPROPERTY()
 	TObjectPtr<UCoreAttackDecisionService> AttackDecisionService;
 
@@ -29,10 +26,13 @@ public:
 	const FCoreAttackDataBase* GetBestAttack();
 	const FCoreAttackDataBase* GetSelectedAttack() const;
 	FGameplayTag DecideNextState() const;
+	float GetDistanceToTarget() const;
 
 	UPROPERTY()
 	TObjectPtr<UCoreEnemyAIData> CachedArchetypeData;
 
 private:
 	const FCoreAttackDataBase* SelectedAttack = nullptr;
+
+	AActor* CachedOwnerActor = nullptr;
 };

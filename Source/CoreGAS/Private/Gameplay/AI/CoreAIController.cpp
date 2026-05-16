@@ -4,6 +4,7 @@
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/CoreAIEventHandler.h"
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
+#include "Gameplay/AI/Debug/CoreAIDebugComponent.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "AbilitySystemComponent.h"
@@ -15,6 +16,7 @@ ACoreAIController::ACoreAIController(const FObjectInitializer& ObjectInitializer
 	StateManager      = CreateDefaultSubobject<UCoreStateManager>(TEXT("StateManager"));
 	EventHandler      = CreateDefaultSubobject<UCoreAIEventHandler>(TEXT("EventHandler"));
 	BehaviorDecision  = CreateDefaultSubobject<UCoreAIBehaviorDecision>(TEXT("BehaviorDecision"));
+	DebugComponent    = CreateDefaultSubobject<UCoreAIDebugComponent>(TEXT("DebugComponent"));
 }
 
 void ACoreAIController::OnPossess(APawn* InPawn)
@@ -40,6 +42,7 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 			SpawnSubsystem->OnHeroSpawn.AddDynamic(this, &ACoreAIController::OnHeroSpawned);
 		}
 	}
+
 }
 
 void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
@@ -50,9 +53,11 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 	CurrentTarget = HeroSpawnData.HeroActor;
 
 	UAbilitySystemComponent* TargetASC = Cast<UAbilitySystemComponent>(HeroSpawnData.HeroActor->FindComponentByClass<UAbilitySystemComponent>());
+
 	BehaviorDecision->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, TargetASC);
 	EventHandler->Initialize(StateManager, OwnerASC);
 	StateManager->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, BehaviorDecision);
+	DebugComponent->Initialize(CachedPawn, StateManager, BehaviorDecision);
 }
 
 void ACoreAIController::OnUnPossess()
