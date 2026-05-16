@@ -79,9 +79,9 @@ FGameplayEventData UCoreState_Movement::BuildMovementEventData(const FCoreAttack
     EventData.Target = Context.TargetActor;
 
     const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
-    if (SimpleAttack && SimpleAttack->AbilityClass)
+    if (SimpleAttack && SimpleAttack->AttackAbilityClass)
     {
-        UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
+        UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AttackAbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
         EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
         CORE_AI_LOG(LogCoreAIMovement, Log, "AcceptanceRadius set to: %.1f", EventData.EventMagnitude);
     }

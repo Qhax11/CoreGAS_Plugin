@@ -74,9 +74,9 @@ FGameplayTag UCoreAIBehaviorDecision::DecideNextState() const
 		{
 			float MaxRange = 150.f;
 			const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
-			if (SimpleAttack && SimpleAttack->AbilityClass)
+			if (SimpleAttack && SimpleAttack->AttackAbilityClass)
 			{
-				if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
+				if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AttackAbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
 				{
 					MaxRange = CDO->MaxRange;
 				}

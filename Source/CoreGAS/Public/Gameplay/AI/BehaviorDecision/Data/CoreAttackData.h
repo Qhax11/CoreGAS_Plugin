@@ -74,13 +74,16 @@ struct COREGAS_API FCoreAttackDataBase
 	FName AttackName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
+	TSubclassOf<UGameplayAbility> AttackAbilityClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement", meta = (ExcludeBaseStruct))
+	TInstancedStruct<FCoreMovementConfigBase> MovementConfig;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
 	float ScoreBias = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (Categories = "Ability.Cooldown"))
 	FGameplayTag CooldownTag;
-
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement", meta = (ExcludeBaseStruct))
-	TInstancedStruct<FCoreMovementConfigBase> MovementConfig;
 };
 
 USTRUCT(BlueprintType)
@@ -88,6 +91,4 @@ struct COREGAS_API FCoreSimpleAttackData : public FCoreAttackDataBase
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI")
-	TSubclassOf<UGameplayAbility> AbilityClass;
 };

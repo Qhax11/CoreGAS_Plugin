@@ -34,9 +34,9 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 		float MaxRange = 150.f;
 
 		const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(Data);
-		if (SimpleAttack && SimpleAttack->AbilityClass)
+		if (SimpleAttack && SimpleAttack->AttackAbilityClass)
 		{
-			if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
+			if (UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AttackAbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>())
 			{
 				MinRange = CDO->MinRange;
 				MaxRange = CDO->MaxRange;

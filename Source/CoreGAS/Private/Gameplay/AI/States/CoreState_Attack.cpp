@@ -31,13 +31,13 @@ void UCoreState_Attack::OnEnter(UCoreStateManager* StateManager)
 
 	const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
 
-	if (!SimpleAttack || !SimpleAttack->AbilityClass)
+	if (!SimpleAttack || !SimpleAttack->AttackAbilityClass)
 	{
 		Super::OnEnter(StateManager);
 		return;
 	}
 
-	AbilityClass = SimpleAttack->AbilityClass;
+	AbilityClass = SimpleAttack->AttackAbilityClass;
 	Super::OnEnter(StateManager);
 }
 
