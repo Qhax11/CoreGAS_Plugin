@@ -2,6 +2,9 @@
 
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovement_Chase.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_AIMoveTo.h"
+#include "Gameplay/AI/CoreAIController.h"
+#include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
+#include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "AIController.h"
 
 void UCoreGameplayAbility_AIMovement_Chase::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
@@ -14,6 +17,7 @@ void UCoreGameplayAbility_AIMovement_Chase::ActivateAbility(const FGameplayAbili
 	AAIController* AIController = Avatar ? Cast<AAIController>(Avatar->GetInstigatorController()) : nullptr;
 	if (!AIController)
 	{
+		EndReason = ECoreMovementEndReason::SetupFailed;
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
 		return;
 	}
@@ -21,6 +25,7 @@ void UCoreGameplayAbility_AIMovement_Chase::ActivateAbility(const FGameplayAbili
 	AActor* Target = TriggerEventData ? const_cast<AActor*>(TriggerEventData->Target.Get()) : nullptr;
 	if (!Target)
 	{
+		EndReason = ECoreMovementEndReason::SetupFailed;
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
 		return;
 	}
@@ -29,9 +34,33 @@ void UCoreGameplayAbility_AIMovement_Chase::ActivateAbility(const FGameplayAbili
 		? TriggerEventData->EventMagnitude
 		: AcceptanceRadius;
 
-	MoveTask = UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(this, AIController, Target, Radius);
-	MoveTask->OnCompleted.AddDynamic(this, &UCoreGameplayAbility_AIMovement_Chase::OnMoveCompleted);
-	MoveTask->OnAborted.AddDynamic(this,   &UCoreGameplayAbility_AIMovement_Chase::OnMoveAborted);
-	MoveTask->OnFailed.AddDynamic(this,    &UCoreGameplayAbility_AIMovement_Chase::OnMoveFailed);
+	float ChaseTime = 0.f;
+	float ChaseDistance = 0.f;
+	if (ACoreAIController* CoreAIController = Cast<ACoreAIController>(AIController))
+	{
+		if (UCoreAIBehaviorDecision* BD = CoreAIController->GetBehaviorDecision())
+		{
+			if (const FCoreAttackDataBase* SelectedAttack = BD->GetSelectedAttack())
+			{
+				if (const FCoreMovementConfig_Chase* ChaseConfig = SelectedAttack->MovementConfig.GetPtr<FCoreMovementConfig_Chase>())
+				{
+					ChaseTime = ChaseConfig->MaxChaseTime;
+					ChaseDistance = ChaseConfig->MaxChaseDistance;
+				}
+			}
+		}
+	}
+
+	MoveTask = UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(this, AIController, Target, Radius, ChaseTime, ChaseDistance);
+	MoveTask->OnCompleted.AddDynamic(this,  &UCoreGameplayAbility_AIMovement_Chase::OnMoveCompleted);
+	MoveTask->OnAborted.AddDynamic(this,    &UCoreGameplayAbility_AIMovement_Chase::OnMoveAborted);
+	MoveTask->OnFailed.AddDynamic(this,     &UCoreGameplayAbility_AIMovement_Chase::OnMoveFailed);
+	MoveTask->OnCancelled.AddDynamic(this,  &UCoreGameplayAbility_AIMovement_Chase::OnMoveCancelled);
 	MoveTask->ReadyForActivation();
+}
+
+void UCoreGameplayAbility_AIMovement_Chase::OnMoveCancelled()
+{
+	EndReason = ECoreMovementEndReason::Cancelled;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, true);
 }

@@ -8,6 +8,16 @@
 
 class UCoreAbilityTask_AIMoveTo;
 
+UENUM(BlueprintType)
+enum class ECoreMovementEndReason : uint8
+{
+	Success,
+	Cancelled,
+	SetupFailed,
+	QueryFailed,
+	MoveFailed
+};
+
 UCLASS(Abstract)
 class COREGAS_API UCoreGameplayAbility_AIMovementBase : public UCoreGameplayAbilityBase
 {
@@ -18,6 +28,8 @@ public:
 
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+	ECoreMovementEndReason EndReason = ECoreMovementEndReason::Cancelled;
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")

@@ -5,6 +5,7 @@
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovementBase.h"
 #include "Gameplay/Debug/CoreGameplayLog.h"
 #include "Gameplay/Components/CoreASCBase.h"
 #include "Gameplay/Tags/CoreAITags.h"
@@ -35,14 +36,15 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     }
 
     const FCoreAttackDataBase* BestAttack = Context.BehaviorDecision->GetBestAttack();
-    if (!BestAttack || !BestAttack->MovementAbilityClass)
+    const FCoreMovementConfigBase* MovementConfig = BestAttack ? BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>() : nullptr;
+    if (!MovementConfig || !MovementConfig->MovementAbilityClass)
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - No MovementAbilityClass on BestAttack");
         return;
     }
 
     // Fetch the handle before activation so the listener can be bound first
-    FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(BestAttack->MovementAbilityClass);
+    FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(MovementConfig->MovementAbilityClass);
     if (!Spec)
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - AbilitySpec not found");
@@ -53,16 +55,24 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     // Bind the listener before activating to avoid missing AlreadyAtGoal completions
     EndListenerHandle = ASC->ListenForAbilityEndedByHandle(ActiveAbilityHandle, [this](const FAbilityEndedData& EndData)
         {
-            CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - bWasCancelled:%s",
-                EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
+            UCoreGameplayAbility_AIMovementBase* MovementAbility = Cast<UCoreGameplayAbility_AIMovementBase>(EndData.AbilityThatEnded);
+            ECoreMovementEndReason Reason = MovementAbility ? MovementAbility->EndReason : ECoreMovementEndReason::Cancelled;
 
-            if (TransitionTag.IsValid())
+            CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - Reason:%d bWasCancelled:%s",
+                (int32)Reason, EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
+
+            switch (Reason)
             {
-                RequestTransition(TransitionTag);
-            }
-            else
-            {
-                CORE_AI_LOG(LogCoreAIMovement, Warning, "Ability ended but TransitionTag is INVALID");
+            case ECoreMovementEndReason::Success:
+                if (TransitionTag.IsValid())
+                    RequestTransition(TransitionTag);
+                break;
+            case ECoreMovementEndReason::SetupFailed:
+                CORE_AI_LOG(LogCoreAIMovement, Warning, "Movement SetupFailed - no transition");
+                break;
+            default:
+                RequestTransition(Context.BehaviorDecision->DecideNextState());
+                break;
             }
         });
 
@@ -78,7 +88,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     }
 
     // Activate after listener is bound - handles AlreadyAtGoal completing synchronously
-    if (!ASC->ActivateAbilityByClassAndReturnHandle(BestAttack->MovementAbilityClass, ActiveAbilityHandle, EventData))
+    if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementConfig->MovementAbilityClass, ActiveAbilityHandle, EventData))
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "ActivateAbility FAILED - ability did not activate");
         ASC->StopListeningForAbilityEnded(EndListenerHandle);

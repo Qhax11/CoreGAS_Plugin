@@ -27,13 +27,18 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FCoreAIMoveDelegate OnFailed;
 
+	UPROPERTY(BlueprintAssignable)
+	FCoreAIMoveDelegate OnCancelled;
+
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|AI|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
 	static UCoreAbilityTask_AIMoveTo* CreateAIMoveToActor(
 		UGameplayAbility* OwningAbility,
 		AAIController* Controller,
 		AActor* TargetActor,
-		float AcceptanceRadius);
+		float AcceptanceRadius,
+		float MaxChaseTime = 0.f,
+		float MaxChaseDistance = 0.f);
 
 	UFUNCTION(BlueprintCallable, Category = "CoreGAS|AI|Tasks",
 		meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
@@ -44,6 +49,7 @@ public:
 		float AcceptanceRadius);
 
 	virtual void Activate() override;
+	virtual void TickTask(float DeltaTime) override;
 	virtual void OnDestroy(bool AbilityEnded) override;
 
 private:
@@ -56,7 +62,13 @@ private:
 	UPROPERTY()
 	FVector CachedLocation;
 
+	UPROPERTY()
+	TObjectPtr<AActor> CachedOwnerActor;
+
 	float CachedAcceptanceRadius = 50.f;
+	float MaxChaseTime = 0.f;
+	float MaxChaseDistance = 0.f;
+	float ElapsedChaseTime = 0.f;
 	bool bMoveToLocation = false;
 
 	UFUNCTION()

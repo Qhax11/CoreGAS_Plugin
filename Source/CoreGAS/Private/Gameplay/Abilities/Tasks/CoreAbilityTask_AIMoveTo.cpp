@@ -7,12 +7,16 @@ UCoreAbilityTask_AIMoveTo* UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(
 	UGameplayAbility* OwningAbility,
 	AAIController* Controller,
 	AActor* TargetActor,
-	float AcceptanceRadius)
+	float AcceptanceRadius,
+	float MaxChaseTime,
+	float MaxChaseDistance)
 {
 	UCoreAbilityTask_AIMoveTo* Task = NewAbilityTask<UCoreAbilityTask_AIMoveTo>(OwningAbility);
 	Task->CachedController       = Controller;
 	Task->CachedTarget           = TargetActor;
 	Task->CachedAcceptanceRadius = AcceptanceRadius;
+	Task->MaxChaseTime           = MaxChaseTime;
+	Task->MaxChaseDistance       = MaxChaseDistance;
 	return Task;
 }
 
@@ -74,6 +78,35 @@ void UCoreAbilityTask_AIMoveTo::Activate()
 		if (ShouldBroadcastAbilityTaskDelegates()) OnFailed.Broadcast();
 		EndTask();
 		return;
+	}
+
+	CachedOwnerActor = GetAvatarActor();
+	bTickingTask = (MaxChaseTime > 0.f || MaxChaseDistance > 0.f);
+}
+
+void UCoreAbilityTask_AIMoveTo::TickTask(float DeltaTime)
+{
+	Super::TickTask(DeltaTime);
+
+	if (MaxChaseTime > 0.f)
+	{
+		ElapsedChaseTime += DeltaTime;
+		if (ElapsedChaseTime >= MaxChaseTime)
+		{
+			if (ShouldBroadcastAbilityTaskDelegates()) OnCancelled.Broadcast();
+			EndTask();
+			return;
+		}
+	}
+
+	if (MaxChaseDistance > 0.f && CachedOwnerActor && CachedTarget)
+	{
+		const float Distance = FVector::Dist(CachedOwnerActor->GetActorLocation(), CachedTarget->GetActorLocation());
+		if (Distance > MaxChaseDistance)
+		{
+			if (ShouldBroadcastAbilityTaskDelegates()) OnCancelled.Broadcast();
+			EndTask();
+		}
 	}
 }
 

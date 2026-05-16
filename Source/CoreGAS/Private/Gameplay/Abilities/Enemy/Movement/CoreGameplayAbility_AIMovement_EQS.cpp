@@ -16,6 +16,7 @@ void UCoreGameplayAbility_AIMovement_EQS::ActivateAbility(const FGameplayAbility
 	AAIController* AIController = Avatar ? Cast<AAIController>(Avatar->GetInstigatorController()) : nullptr;
 	if (!AIController || !RepositionQuery)
 	{
+		EndReason = ECoreMovementEndReason::SetupFailed;
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
 		return;
 	}
@@ -28,6 +29,7 @@ void UCoreGameplayAbility_AIMovement_EQS::OnQueryFinished(TSharedPtr<FEnvQueryRe
 {
 	if (!Result.IsValid() || Result->Items.Num() == 0)
 	{
+		EndReason = ECoreMovementEndReason::QueryFailed;
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, true);
 		return;
 	}
@@ -38,6 +40,7 @@ void UCoreGameplayAbility_AIMovement_EQS::OnQueryFinished(TSharedPtr<FEnvQueryRe
 	AAIController* AIController = Avatar ? Cast<AAIController>(Avatar->GetInstigatorController()) : nullptr;
 	if (!AIController)
 	{
+		EndReason = ECoreMovementEndReason::SetupFailed;
 		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, true);
 		return;
 	}

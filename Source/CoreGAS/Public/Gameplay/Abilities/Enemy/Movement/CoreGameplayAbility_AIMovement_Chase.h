@@ -14,4 +14,8 @@ class COREGAS_API UCoreGameplayAbility_AIMovement_Chase : public UCoreGameplayAb
 public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+protected:
+	UFUNCTION()
+	void OnMoveCancelled();
 };

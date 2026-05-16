@@ -7,6 +7,7 @@
 UCoreGameplayAbility_AIMovementBase::UCoreGameplayAbility_AIMovementBase()
 {
 	AbilityTags.AddTag(CoreGAS::AI::TAG_AI_Ability_Movement);
+
 	bCommitCooldownOnActivate = false;
 	bCommitCostOnActivate = false;
 }
@@ -26,15 +27,18 @@ void UCoreGameplayAbility_AIMovementBase::EndAbility(const FGameplayAbilitySpecH
 
 void UCoreGameplayAbility_AIMovementBase::OnMoveCompleted()
 {
+	EndReason = ECoreMovementEndReason::Success;
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
 }
 
 void UCoreGameplayAbility_AIMovementBase::OnMoveAborted()
 {
+	EndReason = ECoreMovementEndReason::Cancelled;
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, true);
 }
 
 void UCoreGameplayAbility_AIMovementBase::OnMoveFailed()
 {
+	EndReason = ECoreMovementEndReason::MoveFailed;
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, true);
 }
