@@ -2,6 +2,7 @@
 
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovement_EQS.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_AIMoveTo.h"
+#include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "AIController.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
@@ -14,15 +15,20 @@ void UCoreGameplayAbility_AIMovement_EQS::ActivateAbility(const FGameplayAbility
 
 	AActor* Avatar = GetAvatarActorFromActorInfo();
 	AAIController* AIController = Avatar ? Cast<AAIController>(Avatar->GetInstigatorController()) : nullptr;
-	if (!AIController || !RepositionQuery)
+
+	const FCoreMovementConfig_EQS* EQSConfig = (TriggerEventData && TriggerEventData->TargetData.IsValid(0))
+		? static_cast<const FCoreMovementConfig_EQS*>(TriggerEventData->TargetData.Get(0))
+		: nullptr;
+
+	if (!AIController || !EQSConfig || !EQSConfig->RepositionQuery)
 	{
 		EndReason = ECoreMovementEndReason::SetupFailed;
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
 		return;
 	}
 
-	FEnvQueryRequest QueryRequest(RepositionQuery, GetAvatarActorFromActorInfo());
-	QueryRequest.Execute(QueryRunMode, this, &UCoreGameplayAbility_AIMovement_EQS::OnQueryFinished);
+	FEnvQueryRequest QueryRequest(EQSConfig->RepositionQuery, GetAvatarActorFromActorInfo());
+	QueryRequest.Execute(EQSConfig->QueryRunMode, this, &UCoreGameplayAbility_AIMovement_EQS::OnQueryFinished);
 }
 
 void UCoreGameplayAbility_AIMovement_EQS::OnQueryFinished(TSharedPtr<FEnvQueryResult> Result)

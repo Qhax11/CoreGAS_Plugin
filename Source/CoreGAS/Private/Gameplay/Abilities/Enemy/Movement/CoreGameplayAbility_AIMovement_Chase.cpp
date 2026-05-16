@@ -2,8 +2,6 @@
 
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovement_Chase.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_AIMoveTo.h"
-#include "Gameplay/AI/CoreAIController.h"
-#include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "AIController.h"
 
@@ -34,22 +32,11 @@ void UCoreGameplayAbility_AIMovement_Chase::ActivateAbility(const FGameplayAbili
 		? TriggerEventData->EventMagnitude
 		: AcceptanceRadius;
 
-	float ChaseTime = 0.f;
-	float ChaseDistance = 0.f;
-	if (ACoreAIController* CoreAIController = Cast<ACoreAIController>(AIController))
-	{
-		if (UCoreAIBehaviorDecision* BD = CoreAIController->GetBehaviorDecision())
-		{
-			if (const FCoreAttackDataBase* SelectedAttack = BD->GetSelectedAttack())
-			{
-				if (const FCoreMovementConfig_Chase* ChaseConfig = SelectedAttack->MovementConfig.GetPtr<FCoreMovementConfig_Chase>())
-				{
-					ChaseTime = ChaseConfig->MaxChaseTime;
-					ChaseDistance = ChaseConfig->MaxChaseDistance;
-				}
-			}
-		}
-	}
+	const FCoreMovementConfig_Chase* ChaseConfig = (TriggerEventData && TriggerEventData->TargetData.IsValid(0))
+		? static_cast<const FCoreMovementConfig_Chase*>(TriggerEventData->TargetData.Get(0))
+		: nullptr;
+	float ChaseTime     = ChaseConfig ? ChaseConfig->MaxChaseTime     : 0.f;
+	float ChaseDistance = ChaseConfig ? ChaseConfig->MaxChaseDistance : 0.f;
 
 	MoveTask = UCoreAbilityTask_AIMoveTo::CreateAIMoveToActor(this, AIController, Target, Radius, ChaseTime, ChaseDistance);
 	MoveTask->OnCompleted.AddDynamic(this,  &UCoreGameplayAbility_AIMovement_Chase::OnMoveCompleted);

@@ -20,6 +20,7 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 {
     Super::OnEnter(StateManager);
 
+    // --- Validation ---
     if (!Context.TargetActor || !Context.BehaviorDecision)
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - TargetActor:%s BehaviorDecision:%s",
@@ -35,15 +36,18 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
         return;
     }
 
+    // --- Config ---
     const FCoreAttackDataBase* BestAttack = Context.BehaviorDecision->GetBestAttack();
-    const FCoreMovementConfigBase* MovementConfig = BestAttack ? BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>() : nullptr;
+    const FCoreMovementConfigBase* MovementConfig = BestAttack
+        ? BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>()
+        : nullptr;
+
     if (!MovementConfig || !MovementConfig->MovementAbilityClass)
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - No MovementAbilityClass on BestAttack");
         return;
     }
 
-    // Fetch the handle before activation so the listener can be bound first
     FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromClass(MovementConfig->MovementAbilityClass);
     if (!Spec)
     {
@@ -52,42 +56,14 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     }
     ActiveAbilityHandle = Spec->Handle;
 
-    // Bind the listener before activating to avoid missing AlreadyAtGoal completions
-    EndListenerHandle = ASC->ListenForAbilityEndedByHandle(ActiveAbilityHandle, [this](const FAbilityEndedData& EndData)
-        {
-            UCoreGameplayAbility_AIMovementBase* MovementAbility = Cast<UCoreGameplayAbility_AIMovementBase>(EndData.AbilityThatEnded);
-            ECoreMovementEndReason Reason = MovementAbility ? MovementAbility->EndReason : ECoreMovementEndReason::Cancelled;
+    // --- Listen ---
+    // Bind before activating to avoid missing AlreadyAtGoal completions
+    EndListenerHandle = ASC->ListenForAbilityEndedByHandle(ActiveAbilityHandle,
+        [this](const FAbilityEndedData& EndData) { OnMovementAbilityEnded(EndData); });
 
-            CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - Reason:%d bWasCancelled:%s",
-                (int32)Reason, EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
+    // --- Activate ---
+    FGameplayEventData EventData = BuildMovementEventData(BestAttack);
 
-            switch (Reason)
-            {
-            case ECoreMovementEndReason::Success:
-                if (TransitionTag.IsValid())
-                    RequestTransition(TransitionTag);
-                break;
-            case ECoreMovementEndReason::SetupFailed:
-                CORE_AI_LOG(LogCoreAIMovement, Warning, "Movement SetupFailed - no transition");
-                break;
-            default:
-                RequestTransition(Context.BehaviorDecision->DecideNextState());
-                break;
-            }
-        });
-
-    FGameplayEventData EventData;
-    EventData.Target = Context.TargetActor;
-
-    const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
-    if (SimpleAttack && SimpleAttack->AbilityClass)
-    {
-        UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
-        EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
-        CORE_AI_LOG(LogCoreAIMovement, Log, "AcceptanceRadius set to: %.1f", EventData.EventMagnitude);
-    }
-
-    // Activate after listener is bound - handles AlreadyAtGoal completing synchronously
     if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementConfig->MovementAbilityClass, ActiveAbilityHandle, EventData))
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "ActivateAbility FAILED - ability did not activate");
@@ -99,16 +75,65 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     CORE_AI_LOG(LogCoreAIMovement, Log, "Ability activated. Listening for end...");
 }
 
+FGameplayEventData UCoreState_Movement::BuildMovementEventData(const FCoreAttackDataBase* BestAttack) const
+{
+    FGameplayEventData EventData;
+    EventData.Target = Context.TargetActor;
+
+    const FCoreSimpleAttackData* SimpleAttack = static_cast<const FCoreSimpleAttackData*>(BestAttack);
+    if (SimpleAttack && SimpleAttack->AbilityClass)
+    {
+        UCoreGameplayAbility_AttackBase* CDO = SimpleAttack->AbilityClass->GetDefaultObject<UCoreGameplayAbility_AttackBase>();
+        EventData.EventMagnitude = CDO ? CDO->MaxRange : 150.f;
+        CORE_AI_LOG(LogCoreAIMovement, Log, "AcceptanceRadius set to: %.1f", EventData.EventMagnitude);
+    }
+
+    FCoreMovementConfigBase* ConfigPtr = const_cast<FCoreMovementConfigBase*>(
+        BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>());
+    if (ConfigPtr)
+    {
+        EventData.TargetData.Data.Add(
+            TSharedPtr<FGameplayAbilityTargetData>(ConfigPtr, [](FGameplayAbilityTargetData*) {}));
+    }
+
+    return EventData;
+}
+
+void UCoreState_Movement::OnMovementAbilityEnded(const FAbilityEndedData& EndData)
+{
+    UCoreGameplayAbility_AIMovementBase* MovementAbility = Cast<UCoreGameplayAbility_AIMovementBase>(EndData.AbilityThatEnded);
+    ECoreMovementEndReason Reason = MovementAbility
+        ? MovementAbility->EndReason
+        : ECoreMovementEndReason::Cancelled;
+
+    CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - Reason:%d bWasCancelled:%s",
+        (int32)Reason, EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
+
+    switch (Reason)
+    {
+    case ECoreMovementEndReason::Success:
+        if (TransitionTag.IsValid())
+            RequestTransition(TransitionTag);
+        break;
+    case ECoreMovementEndReason::SetupFailed:
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "Movement SetupFailed - no transition");
+        break;
+    default:
+        RequestTransition(Context.BehaviorDecision->DecideNextState());
+        break;
+    }
+}
+
 void UCoreState_Movement::OnExit(UCoreStateManager* StateManager)
 {
-	UCoreASCBase* ASC = Context.OwnerASC;
-	if (ASC && EndListenerHandle.IsValid())
-	{
-		ASC->StopListeningForAbilityEnded(EndListenerHandle);
-	}
+    UCoreASCBase* ASC = Context.OwnerASC;
+    if (ASC && EndListenerHandle.IsValid())
+    {
+        ASC->StopListeningForAbilityEnded(EndListenerHandle);
+    }
 
-	EndListenerHandle   = FDelegateHandle();
-	ActiveAbilityHandle = FGameplayAbilitySpecHandle();
+    EndListenerHandle = FDelegateHandle();
+    ActiveAbilityHandle = FGameplayAbilitySpecHandle();
 
-	Super::OnExit(StateManager);
+    Super::OnExit(StateManager);
 }

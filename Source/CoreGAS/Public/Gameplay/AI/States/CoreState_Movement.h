@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Gameplay/AI/States/CoreStateBase.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "GameplayAbilitySpec.h"
 #include "CoreState_Movement.generated.h"
+
+struct FCoreAttackDataBase;
 
 UCLASS()
 class COREGAS_API UCoreState_Movement : public UCoreStateBase
@@ -27,4 +30,7 @@ public:
 private:
 	FGameplayAbilitySpecHandle ActiveAbilityHandle;
 	FDelegateHandle            EndListenerHandle;
+
+	FGameplayEventData BuildMovementEventData(const FCoreAttackDataBase* BestAttack) const;
+	void OnMovementAbilityEnded(const FAbilityEndedData& EndData);
 };

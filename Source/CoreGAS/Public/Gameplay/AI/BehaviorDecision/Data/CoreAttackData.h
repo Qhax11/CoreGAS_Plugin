@@ -5,21 +5,26 @@
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Abilities/GameplayAbility.h"
+#include "Abilities/GameplayAbilityTargetTypes.h"
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovementBase.h"
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovement_Chase.h"
 #include "Gameplay/Abilities/Enemy/Movement/CoreGameplayAbility_AIMovement_EQS.h"
+#include "EnvironmentQuery/EnvQueryTypes.h"
 #include "StructUtils/InstancedStruct.h"
 #include "CoreAttackData.generated.h"
 
 class UCoreGameplayAbility_AIMovementBase;
+class UEnvQuery;
 
 USTRUCT(BlueprintType, meta = (Hidden))
-struct COREGAS_API FCoreMovementConfigBase
+struct COREGAS_API FCoreMovementConfigBase : public FGameplayAbilityTargetData
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
 	TSubclassOf<UCoreGameplayAbility_AIMovementBase> MovementAbilityClass;
+
+	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
 };
 
 USTRUCT(BlueprintType)
@@ -37,6 +42,8 @@ struct COREGAS_API FCoreMovementConfig_Chase : public FCoreMovementConfigBase
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
 	float MaxChaseDistance = 0.f;
+
+	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
 };
 
 USTRUCT(BlueprintType)
@@ -48,6 +55,14 @@ struct COREGAS_API FCoreMovementConfig_EQS : public FCoreMovementConfigBase
 	{
 		MovementAbilityClass = UCoreGameplayAbility_AIMovement_EQS::StaticClass();
 	}
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
+	TObjectPtr<UEnvQuery> RepositionQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Movement")
+	TEnumAsByte<EEnvQueryRunMode::Type> QueryRunMode = EEnvQueryRunMode::RandomBest25Pct;
+
+	virtual UScriptStruct* GetScriptStruct() const override { return StaticStruct(); }
 };
 
 USTRUCT(BlueprintType)
