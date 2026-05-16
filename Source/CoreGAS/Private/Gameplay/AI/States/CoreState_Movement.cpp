@@ -21,27 +21,26 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
     Super::OnEnter(StateManager);
 
     // --- Validation ---
-    if (!Context.TargetActor || !Context.BehaviorDecision)
+    if (!Context.TargetActor || !Context.BehaviorDecision || !Context.OwnerASC)
     {
-        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - TargetActor:%s BehaviorDecision:%s",
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - TargetActor:%s BehaviorDecision:%s OwnerASC:%s",
             Context.TargetActor ? TEXT("OK") : TEXT("NULL"),
-            Context.BehaviorDecision ? TEXT("OK") : TEXT("NULL"));
+            Context.BehaviorDecision ? TEXT("OK") : TEXT("NULL"),
+            Context.OwnerASC ? TEXT("OK") : TEXT("NULL"));
         return;
     }
 
     UCoreASCBase* ASC = Context.OwnerASC;
-    if (!ASC)
-    {
-        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - OwnerASC is NULL");
-        return;
-    }
 
     // --- Config ---
     const FCoreAttackDataBase* BestAttack = Context.BehaviorDecision->GetBestAttack();
-    const FCoreMovementConfigBase* MovementConfig = BestAttack
-        ? BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>()
-        : nullptr;
+    if (!BestAttack)
+    {
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - BestAttack is NULL");
+        return;
+    }
 
+    const FCoreMovementConfigBase* MovementConfig = BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>();
     if (!MovementConfig || !MovementConfig->MovementAbilityClass)
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "OnEnter ABORTED - No MovementAbilityClass on BestAttack");
@@ -63,7 +62,6 @@ void UCoreState_Movement::OnEnter(UCoreStateManager* StateManager)
 
     // --- Activate ---
     FGameplayEventData EventData = BuildMovementEventData(BestAttack);
-
     if (!ASC->ActivateAbilityByClassAndReturnHandle(MovementConfig->MovementAbilityClass, ActiveAbilityHandle, EventData))
     {
         CORE_AI_LOG(LogCoreAIMovement, Warning, "ActivateAbility FAILED - ability did not activate");
@@ -88,12 +86,10 @@ FGameplayEventData UCoreState_Movement::BuildMovementEventData(const FCoreAttack
         CORE_AI_LOG(LogCoreAIMovement, Log, "AcceptanceRadius set to: %.1f", EventData.EventMagnitude);
     }
 
-    FCoreMovementConfigBase* ConfigPtr = const_cast<FCoreMovementConfigBase*>(
-        BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>());
+    FCoreMovementConfigBase* ConfigPtr = const_cast<FCoreMovementConfigBase*>(BestAttack->MovementConfig.GetPtr<FCoreMovementConfigBase>());
     if (ConfigPtr)
     {
-        EventData.TargetData.Data.Add(
-            TSharedPtr<FGameplayAbilityTargetData>(ConfigPtr, [](FGameplayAbilityTargetData*) {}));
+        EventData.TargetData.Data.Add(TSharedPtr<FGameplayAbilityTargetData>(ConfigPtr, [](FGameplayAbilityTargetData*) {}));
     }
 
     return EventData;
@@ -102,12 +98,8 @@ FGameplayEventData UCoreState_Movement::BuildMovementEventData(const FCoreAttack
 void UCoreState_Movement::OnMovementAbilityEnded(const FAbilityEndedData& EndData)
 {
     UCoreGameplayAbility_AIMovementBase* MovementAbility = Cast<UCoreGameplayAbility_AIMovementBase>(EndData.AbilityThatEnded);
-    ECoreMovementEndReason Reason = MovementAbility
-        ? MovementAbility->EndReason
-        : ECoreMovementEndReason::Cancelled;
-
-    CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - Reason:%d bWasCancelled:%s",
-        (int32)Reason, EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
+    ECoreMovementEndReason Reason = MovementAbility ? MovementAbility->EndReason : ECoreMovementEndReason::Cancelled;
+    CORE_AI_LOG(LogCoreAIMovement, Log, "Ability ended - Reason:%d bWasCancelled:%s", (int32)Reason, EndData.bWasCancelled ? TEXT("true") : TEXT("false"));
 
     switch (Reason)
     {
