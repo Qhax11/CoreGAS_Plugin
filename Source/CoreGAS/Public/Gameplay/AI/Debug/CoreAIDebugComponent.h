@@ -17,14 +17,18 @@ class COREGAS_API UCoreAIDebugComponent : public UActorComponent
 public:
 	UCoreAIDebugComponent();
 
+	void Initialize(AActor* OwnerActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision);
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Debug")
 	bool bEnableDebug = false;
 
-	void Initialize(AActor* OwnerActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision);
-
 private:
+	void DrawState(const FVector& BaseLocation) const;
+	void DrawAttack(const FVector& BaseLocation) const;
+	void DrawDistance(const FVector& BaseLocation) const;
+
 	UPROPERTY()
 	TObjectPtr<UCoreStateManager> StateManager;
 

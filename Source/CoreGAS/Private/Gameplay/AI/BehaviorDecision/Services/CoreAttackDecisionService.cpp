@@ -43,28 +43,14 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 			}
 		}
 
-		float Distance = 0.f;
 		float DistanceScore = -1.f;
 		if (CachedOwner && CachedTarget)
 		{
-			Distance = FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
-			if (Distance < MinRange)
-			{
-				DistanceScore = -1.f;
-			}
-			else if (Distance > MaxRange)
-			{
-				DistanceScore = -0.5f;
-			}
-			else
-			{
-				const float NormalizedDist = (Distance - MinRange) / (MaxRange - MinRange);
-				DistanceScore = FMath::Lerp(-1.f, 1.f, NormalizedDist);
-			}
+			DistanceScore = CalculateDistanceScore(GetDistanceToTarget(), MinRange, MaxRange);
 		}
 
 		const float TotalScore = DistanceScore + Data->ScoreBias;
-		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Attack: %s | Distance: %.1f | Score: %.2f"), *Data->AttackName.ToString(), Distance, TotalScore);
+		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Attack: %s | Distance: %.1f | Score: %.2f"), *Data->AttackName.ToString(), GetDistanceToTarget(), TotalScore);
 		if (TotalScore > BestScore)
 		{
 			BestScore = TotalScore;
@@ -73,6 +59,18 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 	}
 
 	return BestAttack;
+}
+
+float UCoreAttackDecisionService::CalculateDistanceScore(float Distance, float MinRange, float MaxRange) const
+{
+	if (Distance < MinRange)
+		return -1.f;
+
+	if (Distance > MaxRange)
+		return -0.5f;
+
+	const float NormalizedDist = (Distance - MinRange) / (MaxRange - MinRange);
+	return FMath::Lerp(-1.f, 1.f, NormalizedDist);
 }
 
 float UCoreAttackDecisionService::GetDistanceToTarget() const
@@ -84,3 +82,4 @@ float UCoreAttackDecisionService::GetDistanceToTarget() const
 
 	return FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
 }
+
