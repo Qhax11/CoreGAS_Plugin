@@ -63,14 +63,14 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 
 float UCoreAttackDecisionService::CalculateDistanceScore(float Distance, float MinRange, float MaxRange) const
 {
-	if (Distance < MinRange)
-		return -1.f;
+	if (Distance >= MinRange && Distance <= MaxRange)
+		return 1.f;
 
-	if (Distance > MaxRange)
-		return -0.5f;
+	const float DistToRange = (Distance < MinRange)
+		? (MinRange - Distance)
+		: (Distance - MaxRange);
 
-	const float NormalizedDist = (Distance - MinRange) / (MaxRange - MinRange);
-	return FMath::Lerp(-1.f, 1.f, NormalizedDist);
+	return -DistToRange / 10000.f;
 }
 
 float UCoreAttackDecisionService::GetDistanceToTarget() const

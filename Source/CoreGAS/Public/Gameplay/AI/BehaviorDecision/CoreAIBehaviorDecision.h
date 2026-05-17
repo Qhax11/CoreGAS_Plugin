@@ -18,21 +18,23 @@ class COREGAS_API UCoreAIBehaviorDecision : public UActorComponent
 public:
 	UCoreAIBehaviorDecision();
 
-	UPROPERTY()
-	TObjectPtr<UCoreAttackDecisionService> AttackDecisionService;
-
 	void Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC);
-	void SetBehaviorData(UCoreEnemyAIData* ArchetypeData);
+	void SetBehaviorData(UCoreEnemyAIData* AIBehaviorData);
 	const FCoreAttackDataBase* GetBestAttack();
 	const FCoreAttackDataBase* GetSelectedAttack() const;
-	FGameplayTag DecideNextState() const;
+	FGameplayTag DecideNextState();
 	float GetDistanceToTarget() const;
 
 	UPROPERTY()
-	TObjectPtr<UCoreEnemyAIData> CachedArchetypeData;
+	TObjectPtr<UCoreEnemyAIData> AIData;
 
 private:
+	UPROPERTY()
+	TObjectPtr<UCoreAttackDecisionService> AttackDecisionService;
+
+	UPROPERTY()
 	const FCoreAttackDataBase* SelectedAttack = nullptr;
 
+	UPROPERTY()
 	AActor* CachedOwnerActor = nullptr;
 };

@@ -25,19 +25,19 @@ void UCoreAIBehaviorDecision::Initialize(AActor* OwnerActor, UCoreASCBase* Owner
 	AttackDecisionService->Initialize(Params);
 }
 
-void UCoreAIBehaviorDecision::SetBehaviorData(UCoreEnemyAIData* ArchetypeData)
+void UCoreAIBehaviorDecision::SetBehaviorData(UCoreEnemyAIData* AIBehaviorData)
 {
-	CachedArchetypeData = ArchetypeData;
+	AIData = AIBehaviorData;
 }
 
 const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetBestAttack()
 {
-	if (!AttackDecisionService || !CachedArchetypeData)
+	if (!AttackDecisionService || !AIData)
 	{
 		return nullptr;
 	}
 
-	const FCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
+	const FCoreAttackDataBase* Result = AttackDecisionService->GetBestAttack(AIData->AttackOptions);
 	SelectedAttack = Result;
 
 	UE_LOG(LogCoreAIDecision, Log, TEXT("[BehaviorDecision] GetBestAttack: %s"), Result ? *Result->AttackName.ToString() : TEXT("null"));
@@ -55,17 +55,17 @@ float UCoreAIBehaviorDecision::GetDistanceToTarget() const
 	return AttackDecisionService ? AttackDecisionService->GetDistanceToTarget() : MAX_FLT;
 }
 
-FGameplayTag UCoreAIBehaviorDecision::DecideNextState() const
+FGameplayTag UCoreAIBehaviorDecision::DecideNextState() 
 {
 	FGameplayTag DecidedTag;
 
-	if (!CachedArchetypeData || !AttackDecisionService)
+	if (!AIData || !AttackDecisionService)
 	{
 		DecidedTag = CoreGAS::AI::TAG_State_Idle;
 	}
 	else
 	{
-		const FCoreAttackDataBase* BestAttack = AttackDecisionService->GetBestAttack(CachedArchetypeData->AttackOptions);
+		const FCoreAttackDataBase* BestAttack = GetBestAttack();
 		if (!BestAttack)
 		{
 			DecidedTag = CoreGAS::AI::TAG_State_Combat_Movement;
