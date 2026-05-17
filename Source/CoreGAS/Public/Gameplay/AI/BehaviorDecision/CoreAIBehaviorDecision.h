@@ -33,8 +33,7 @@ private:
 	TObjectPtr<UCoreAttackDecisionService> AttackDecisionService;
 
 	UPROPERTY()
-	const FCoreAttackDataBase* SelectedAttack = nullptr;
-
-	UPROPERTY()
 	AActor* CachedOwnerActor = nullptr;
+
+	const FCoreAttackDataBase* SelectedAttack = nullptr;
 };

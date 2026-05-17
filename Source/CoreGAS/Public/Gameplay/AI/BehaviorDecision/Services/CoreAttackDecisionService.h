@@ -49,5 +49,4 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UAbilitySystemComponent> CachedTargetASC;
 
-	float CalculateDistanceScore(float Distance, float MinRange, float MaxRange) const;
 };

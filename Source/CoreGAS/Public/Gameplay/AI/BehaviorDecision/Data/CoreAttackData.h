@@ -84,6 +84,12 @@ struct COREGAS_API FCoreAttackDataBase
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI", meta = (Categories = "Ability.Cooldown"))
 	FGameplayTag CooldownTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Selection")
+	float PreferredMinDistance = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Selection")
+	float PreferredMaxDistance = 99999.f;
 };
 
 USTRUCT(BlueprintType)
