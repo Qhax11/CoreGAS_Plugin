@@ -123,6 +123,7 @@ void UCoreAbilityTask_AIMoveTo::OnMoveCompleted(FAIRequestID RequestID, EPathFol
 	switch (Result)
 	{
 	case EPathFollowingResult::Success:
+	case EPathFollowingResult::Invalid:  
 		OnCompleted.Broadcast();
 		break;
 	case EPathFollowingResult::Aborted:

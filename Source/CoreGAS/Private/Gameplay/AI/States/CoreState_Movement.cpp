@@ -110,6 +110,9 @@ void UCoreState_Movement::OnMovementAbilityEnded(const FAbilityEndedData& EndDat
     case ECoreMovementEndReason::SetupFailed:
         CORE_AI_LOG(LogCoreAIMovement, Warning, "Movement SetupFailed - no transition");
         break;
+    case ECoreMovementEndReason::MoveFailed:
+        CORE_AI_LOG(LogCoreAIMovement, Warning, "Movement MoveFailed - no transition");
+        break;
     default:
         RequestTransition(Context.BehaviorDecision->DecideNextState());
         break;
