@@ -35,7 +35,8 @@ public class CoreGAS : ModuleRules
                 "MotionWarping",
                 "AIModule",
                 "NavigationSystem",
-                "StructUtils"
+                "StructUtils",
+                "DeveloperSettings"
             }
 			);
 

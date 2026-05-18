@@ -25,6 +25,7 @@
 	"Plugins": [
 		{ "Name": "GameplayAbilities", "Enabled": true },
 		{ "Name": "EnhancedInput", "Enabled": true },
-		{ "Name": "MotionWarping", "Enabled": true }
+		{ "Name": "MotionWarping", "Enabled": true },
+		{ "Name": "StructUtils", "Enabled": true }
 	]
 }

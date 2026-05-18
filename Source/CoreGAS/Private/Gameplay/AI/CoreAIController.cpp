@@ -9,6 +9,7 @@
 #include "Gameplay/Tags/CoreAITags.h"
 #include "AbilitySystemComponent.h"
 #include "Navigation/CrowdFollowingComponent.h"
+#include "Gameplay/AI/Subsystems/CoreAICrowdManager.h"
 
 ACoreAIController::ACoreAIController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
@@ -22,6 +23,12 @@ ACoreAIController::ACoreAIController(const FObjectInitializer& ObjectInitializer
 void ACoreAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	if (UCoreAICrowdManager* CrowdManager = GetWorld()->GetSubsystem<UCoreAICrowdManager>())
+	{
+		UCoreASCBase* OwnerASC = InPawn ? InPawn->FindComponentByClass<UCoreASCBase>() : nullptr;
+		if (OwnerASC) CrowdManager->RegisterEnemy(OwnerASC);
+	}
 
 	if (UCrowdFollowingComponent* CrowdComp = Cast<UCrowdFollowingComponent>(GetPathFollowingComponent()))
 	{
@@ -67,6 +74,15 @@ void ACoreAIController::OnUnPossess()
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())
 	{
 		SpawnSubsystem->OnHeroSpawn.RemoveDynamic(this, &ACoreAIController::OnHeroSpawned);
+	}
+
+	if (APawn* CachedPawn = GetPawn())
+	{
+		if (UCoreAICrowdManager* CrowdManager = GetWorld()->GetSubsystem<UCoreAICrowdManager>())
+		{
+			UCoreASCBase* OwnerASC = CachedPawn->FindComponentByClass<UCoreASCBase>();
+			if (OwnerASC) CrowdManager->UnregisterEnemy(OwnerASC);
+		}
 	}
 
 	Super::OnUnPossess();

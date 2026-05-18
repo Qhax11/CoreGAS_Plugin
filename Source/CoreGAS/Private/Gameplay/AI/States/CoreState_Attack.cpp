@@ -5,6 +5,7 @@
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
 #include "Gameplay/Tags/CoreAITags.h"
+#include "Gameplay/AI/Subsystems/CoreAICrowdManager.h"
 
 UCoreState_Attack::UCoreState_Attack()
 {
@@ -38,7 +39,26 @@ void UCoreState_Attack::OnEnter(UCoreStateManager* StateManager)
 	}
 
 	AbilityClass = SimpleAttack->AttackAbilityClass;
+
+	if (UCoreAICrowdManager* CrowdManager = GetWorld() ? GetWorld()->GetSubsystem<UCoreAICrowdManager>() : nullptr)
+	{
+		if (!CrowdManager->RequestToken(Context.OwnerASC))
+		{
+			RequestTransition(CoreGAS::AI::TAG_State_Combat_Movement);
+			return;
+		}
+	}
+
 	Super::OnEnter(StateManager);
+}
+
+void UCoreState_Attack::OnExit(UCoreStateManager* StateManager)
+{
+	if (UCoreAICrowdManager* CrowdManager = GetWorld() ? GetWorld()->GetSubsystem<UCoreAICrowdManager>() : nullptr)
+	{
+		CrowdManager->ReleaseToken(Context.OwnerASC);
+	}
+	Super::OnExit(StateManager);
 }
 
 void UCoreState_Attack::OnAbilityEnded()

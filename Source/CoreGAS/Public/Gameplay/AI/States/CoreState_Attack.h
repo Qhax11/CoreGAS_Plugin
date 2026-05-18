@@ -15,6 +15,7 @@ public:
 	UCoreState_Attack();
 
 	virtual void OnEnter(UCoreStateManager* StateManager) override;
+	virtual void OnExit(UCoreStateManager* StateManager) override;
 
 protected:
 	virtual void OnAbilityEnded() override;
