@@ -3,6 +3,7 @@
 #include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAoE.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
 #include "Gameplay/Tags/CoreCharacterTags.h"
+#include "Gameplay/Tags/CoreGameplayCueTags.h"
 #include "Gameplay/Tracing/CoreTraceConfig.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -34,56 +35,71 @@ void UCoreGameplayAbility_MeleeAoE::OnEventReceived(FGameplayTag EventTag, FGame
 
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 	TArray<FHitResult> HitResults = AoETraceConfig->Execute(AvatarActor, FVector::ZeroVector, FVector::ZeroVector, AvatarActor);
-	if (HitEffects.IsEmpty())
-	{
-		return;
-	}
 
 	UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
 	if (!SourceASC)
 	{
 		return;
 	}
-	const bool bSourceIsEnemy = SourceASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy);
 
-	TSet<AActor*> HitActors;
-	for (const FHitResult& Hit : HitResults)
+	if (!HitEffects.IsEmpty())
 	{
-		AActor* HitActor = Hit.GetActor();
-		if (!HitActor || HitActors.Contains(HitActor))
-		{
-			continue;
-		}
+		const bool bSourceIsEnemy = SourceASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy);
+		TSet<AActor*> HitActors;
 
-		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
-		if (!TargetASC)
+		for (const FHitResult& Hit : HitResults)
 		{
-			continue;
-		}
-
-		if (bSourceIsEnemy && TargetASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy))
-		{
-			continue;
-		}
-
-		for (const TSubclassOf<UGameplayEffect>& EffectClass : HitEffects)
-		{
-			if (!EffectClass)
+			AActor* HitActor = Hit.GetActor();
+			if (!HitActor || HitActors.Contains(HitActor))
 			{
 				continue;
 			}
 
-			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass, GetAbilityLevel());
-			if (!SpecHandle.IsValid())
+			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
+			if (!TargetASC)
 			{
 				continue;
 			}
 
-			FGameplayEffectContextHandle Context = SpecHandle.Data->GetContext();
-			Context.AddHitResult(Hit, true);
-			SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-		}
+			if (bSourceIsEnemy && TargetASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy))
+			{
+				continue;
+			}
 
-		HitActors.Add(HitActor);
+			for (const TSubclassOf<UGameplayEffect>& EffectClass : HitEffects)
+			{
+				if (!EffectClass)
+				{
+					continue;
+				}
+
+				FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass, GetAbilityLevel());
+				if (!SpecHandle.IsValid())
+				{
+					continue;
+				}
+
+				FGameplayEffectContextHandle Context = SpecHandle.Data->GetContext();
+				Context.AddHitResult(Hit, true);
+				SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
+			}
+
+			HitActors.Add(HitActor);
+		}
 	}
+
+	const FVector SocketLocation = AoETraceConfig->GetStartLocation(AvatarActor, FVector::ZeroVector);
+
+	FHitResult GroundHit;
+	GetWorld()->LineTraceSingleByChannel(
+		GroundHit,
+		SocketLocation,
+		SocketLocation + FVector::DownVector * 300.f,
+		ECC_WorldStatic
+	);
+
+	FGameplayCueParameters CueParams;
+	CueParams.Location = GroundHit.bBlockingHit ? GroundHit.ImpactPoint : SocketLocation;
+	CueParams.Normal = GroundHit.bBlockingHit ? GroundHit.ImpactNormal : FVector::UpVector;
+	SourceASC->ExecuteGameplayCue(CoreGAS::GameplayCue::TAG_GameplayCue_Impact_MeleeAoE, CueParams);
 }
