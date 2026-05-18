@@ -28,7 +28,9 @@ void ACoreAIController::OnPossess(APawn* InPawn)
 		CrowdComp->SetCrowdAvoidanceQuality(ECrowdAvoidanceQuality::High);
 		CrowdComp->SetAvoidanceGroup(1);
 		CrowdComp->SetGroupsToAvoid(1);
-		CrowdComp->SetCrowdCollisionQueryRange(600);
+		CrowdComp->SetCrowdCollisionQueryRange(300);
+		CrowdComp->SetCrowdSeparation(true);
+		CrowdComp->SetCrowdSeparationWeight(5.0f);
 	}
 
 	if (UCoreSpawnSubsystem* SpawnSubsystem = GetWorld()->GetGameInstance()->GetSubsystem<UCoreSpawnSubsystem>())

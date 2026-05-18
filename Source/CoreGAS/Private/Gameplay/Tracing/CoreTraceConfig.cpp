@@ -108,8 +108,8 @@ void UCoreTraceConfig::DrawDebugTrace(UWorld* World, FVector Start, FVector End,
 		break;
 	}
 
-	DrawDebugPoint(World, Start, 10.f, FColor::Green, false, DebugDuration);
-	DrawDebugPoint(World, End, 10.f, FColor::Red, false, DebugDuration);
+	DrawDebugPoint(World, Start, 20.f, FColor::Green, false, DebugDuration);
+	DrawDebugPoint(World, End, 20.f, FColor::Red, false, DebugDuration);
 }
 
 TArray<FHitResult> UCoreTraceConfig::TraceSegment(UWorld* World, FVector From, FVector To, const FCollisionShape& Shape, const FCollisionQueryParams& QueryParams) const

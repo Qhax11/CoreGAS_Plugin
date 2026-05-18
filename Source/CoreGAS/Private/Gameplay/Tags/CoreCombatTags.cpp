@@ -32,6 +32,9 @@ namespace CoreGAS::Combat
 	// Range event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Range_Projectile_Spawn, "CoreGAS.Event.Range.Projectile.Spawn")
 
+	// AoE event tags
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_AoE_Impact, "CoreGAS.Event.AoE.Impact")
+
 	// Death event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Death,   "CoreGAS.Event.Death")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_HitReaction, "CoreGAS.Event.HitReaction")
