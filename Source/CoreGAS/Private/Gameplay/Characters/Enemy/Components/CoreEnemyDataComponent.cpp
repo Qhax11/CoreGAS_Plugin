@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Gameplay/Characters/Enemy/Components/CoreEnemyDataComponent.h"
+#include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/Data/CoreEnemyAIData.h"
 #include "Gameplay/AI/CoreAIController.h"
 #include "Gameplay/Libraries/CoreGASLibrary.h"

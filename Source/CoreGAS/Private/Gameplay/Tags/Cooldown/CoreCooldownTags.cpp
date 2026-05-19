@@ -12,4 +12,10 @@ namespace CoreGAS::Cooldown
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Ability_Num_3,  "CoreGAS.Cooldown.Ability.Num.3")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Ability_Num_4,  "CoreGAS.Cooldown.Ability.Num.4")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Ability_Num_5,  "CoreGAS.Cooldown.Ability.Num.5")
+
+	// Enemy 
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Enemy_Attack_Melee,  "CoreGAS.Cooldown.Enemy.Attack.Melee")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Enemy_Attack_Ranged,  "CoreGAS.Cooldown.Enemy.Attack.Ranged")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Enemy_Attack_AOE,  "CoreGAS.Cooldown.Enemy.Attack.AOE")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_Cooldown_Enemy_Special,  "CoreGAS.Cooldown.Enemy.Attack.Special")
 }

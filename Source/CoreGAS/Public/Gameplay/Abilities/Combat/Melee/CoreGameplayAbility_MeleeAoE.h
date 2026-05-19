@@ -8,6 +8,7 @@
 
 class UCoreTraceConfig;
 class UGameplayEffect;
+class UDecalComponent;
 
 UCLASS()
 class COREGAS_API UCoreGameplayAbility_MeleeAoE : public UCoreGameplayAbility_AttackBase
@@ -27,5 +28,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee|AoE")
 	TObjectPtr<UCoreTraceConfig> AoETraceConfig;
 
+	UPROPERTY(EditAnywhere, Category = "CoreGAS|Melee|AoE")
+	TObjectPtr<UMaterialInterface> AoEDecalMaterial;
+
 	virtual void OnEventReceived(FGameplayTag EventTag, FGameplayEventData EventData) override;
+
+private:
+	TObjectPtr<UDecalComponent> ActiveDecal;
 };

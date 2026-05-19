@@ -15,4 +15,10 @@ namespace CoreGAS::Cooldown
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Ability_Num_3)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Ability_Num_4)
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Ability_Num_5)
+
+	// Enemy 
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Enemy_Attack_Melee)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Enemy_Attack_Ranged)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Enemy_Attack_AOE)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Cooldown_Enemy_Special)
 }

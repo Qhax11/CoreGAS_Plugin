@@ -14,26 +14,37 @@ void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams
 const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions)
 {
 	TArray<const FCoreAttackDataBase*> Valid;
-
 	const float Distance = GetDistanceToTarget();
-
 	for (const TInstancedStruct<FCoreAttackDataBase>& Option : AttackOptions)
 	{
 		const FCoreAttackDataBase* Data = Option.GetPtr<FCoreAttackDataBase>();
 		if (!Data) continue;
-
 		if (Data->CooldownTag.IsValid() && CachedOwnerASC && CachedOwnerASC->HasMatchingGameplayTag(Data->CooldownTag)) continue;
-
 		if (Distance < Data->PreferredMinDistance || Distance > Data->PreferredMaxDistance) continue;
-
 		Valid.Add(Data);
-		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Candidate: %s | Distance: %.1f"), *Data->AttackName.ToString(), Distance);
+		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Candidate: %s | Distance: %.1f | Weight: %.2f"), *Data->AttackName.ToString(), Distance, Data->SelectionWeight);
 	}
-
 	if (Valid.IsEmpty()) return nullptr;
 
-	const FCoreAttackDataBase* Selected = Valid[FMath::RandRange(0, Valid.Num() - 1)];
-	UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Selected: %s"), *Selected->AttackName.ToString());
+	float TotalWeight = 0.f;
+	for (const FCoreAttackDataBase* Data : Valid)
+		TotalWeight += Data->SelectionWeight;
+
+	float Roll = FMath::FRandRange(0.f, TotalWeight);
+	float Accumulated = 0.f;
+	const FCoreAttackDataBase* Selected = Valid.Last();
+
+	for (const FCoreAttackDataBase* Data : Valid)
+	{
+		Accumulated += Data->SelectionWeight;
+		if (Roll <= Accumulated)
+		{
+			Selected = Data;
+			break;
+		}
+	}
+
+	UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Selected: %s (Roll: %.2f / Total: %.2f)"), *Selected->AttackName.ToString(), Roll, TotalWeight);
 	return Selected;
 }
 

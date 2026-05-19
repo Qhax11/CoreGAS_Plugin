@@ -1,4 +1,4 @@
-// Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
+﻿// Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
 
 #include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAoE.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
@@ -6,7 +6,9 @@
 #include "Gameplay/Tags/CoreGameplayCueTags.h"
 #include "Gameplay/Tracing/CoreTraceConfig.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Components/DecalComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 UCoreGameplayAbility_MeleeAoE::UCoreGameplayAbility_MeleeAoE()
 {
@@ -23,6 +25,37 @@ void UCoreGameplayAbility_MeleeAoE::ActivateAbility(const FGameplayAbilitySpecHa
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
 		return;
+	}
+
+	if (AoEDecalMaterial)
+	{
+		AActor* AvatarActor = GetAvatarActorFromActorInfo();
+		const FVector SocketLocation = AoETraceConfig->GetStartLocation(AvatarActor, FVector::ZeroVector);
+
+		FHitResult GroundHit;
+		GetWorld()->LineTraceSingleByChannel(
+			GroundHit,
+			SocketLocation,
+			SocketLocation + FVector::DownVector * 300.f,
+			ECC_WorldStatic
+		);
+
+		const FVector DecalLocation = GroundHit.bBlockingHit ? GroundHit.ImpactPoint : SocketLocation;
+		const FRotator DecalRotation = FRotator(-90.f, 0.f, 0.f); // yere dik
+
+		const float AoERadius = AoETraceConfig->ShapeRadius;
+		ActiveDecal = UGameplayStatics::SpawnDecalAtLocation(
+			GetWorld(),
+			AoEDecalMaterial,
+			FVector(5.f, AoERadius, AoERadius),
+			DecalLocation,
+			DecalRotation
+		);
+
+		if (ActiveDecal)
+		{
+			ActiveDecal->SetFadeOut(0.f, 0.f, false); // impact'te manuel destroy edeceğiz
+		}
 	}
 }
 

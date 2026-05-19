@@ -90,6 +90,9 @@ struct COREGAS_API FCoreAttackDataBase
 
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AI|Selection")
 	float PreferredMaxDistance = 99999.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Selection", meta = (ClampMin = "0.1", ClampMax = "1.0"))
+	float SelectionWeight = 1.0f;
 };
 
 USTRUCT(BlueprintType)
