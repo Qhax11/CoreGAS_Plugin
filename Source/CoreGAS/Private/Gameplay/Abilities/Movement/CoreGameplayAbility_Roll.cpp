@@ -69,9 +69,22 @@ void UCoreGameplayAbility_Roll::ActivateAbility(const FGameplayAbilitySpecHandle
 
 	if (Character && Character->GetCharacterMovement())
 	{
-		const FVector WorldInput = Character->GetLastMovementInputVector();
-		const FVector LocalInput = Character->GetActorRotation().UnrotateVector(WorldInput);
-		CachedInputDirection = FVector2D(LocalInput.X, LocalInput.Y);
+		CachedWorldDashDir = Character->GetLastMovementInputVector();
+		UE_LOG(LogTemp, Warning, TEXT("[Roll] CachedWorldDashDir: X=%.2f Y=%.2f Z=%.2f | ActorYaw: %.1f"),
+			CachedWorldDashDir.X, CachedWorldDashDir.Y, CachedWorldDashDir.Z,
+			AvatarActor->GetActorRotation().Yaw);
+
+		if (CachedWorldDashDir.IsNearlyZero())
+		{
+			CachedWorldDashDir = AvatarActor->GetActorForwardVector();
+		}
+		else
+		{
+			CachedWorldDashDir = CachedWorldDashDir.GetSafeNormal();
+		}
+
+		const FVector LocalDir = AvatarActor->GetActorRotation().UnrotateVector(CachedWorldDashDir);
+		CachedInputDirection = FVector2D(LocalDir.X, LocalDir.Y);
 	}
 
 	const FGameplayTag DirectionTag = GetDirectionTagFromInput(CachedInputDirection);
@@ -89,16 +102,15 @@ void UCoreGameplayAbility_Roll::ActivateAbility(const FGameplayAbilitySpecHandle
 	UMotionWarpingComponent* MotionWarpingComp = AvatarActor->FindComponentByClass<UMotionWarpingComponent>();
 	if (MotionWarpingComp)
 	{
-		FVector InputDir = FVector(CachedInputDirection.X, CachedInputDirection.Y, 0.f).GetSafeNormal();
-		if (InputDir.IsNearlyZero())
-		{
-			InputDir = AvatarActor->GetActorForwardVector();
-		}
-
 		FMotionWarpingTarget WarpTarget;
 		WarpTarget.Name = WarpTargetName;
-		WarpTarget.Location = AvatarActor->GetActorLocation() + InputDir * WarpDistance;
+		WarpTarget.Location = AvatarActor->GetActorLocation() + CachedWorldDashDir * WarpDistance;
 		MotionWarpingComp->AddOrUpdateWarpTarget(WarpTarget);
+	}
+
+	if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+	{
+		MoveComp->bOrientRotationToMovement = false;
 	}
 
 	AbilityMontage = Montage;
@@ -145,6 +157,14 @@ void UCoreGameplayAbility_Roll::EndAbility(const FGameplayAbilitySpecHandle Hand
 	{
 		WaitDelayTask->EndTask();
 		WaitDelayTask = nullptr;
+	}
+
+	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
+	{
+		if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+		{
+			MoveComp->bOrientRotationToMovement = true;
+		}
 	}
 
 	UAbilitySystemComponent* ASC = ActorInfo ? ActorInfo->AbilitySystemComponent.Get() : nullptr;

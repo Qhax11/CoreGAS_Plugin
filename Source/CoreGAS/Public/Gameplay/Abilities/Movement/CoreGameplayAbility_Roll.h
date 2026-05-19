@@ -81,4 +81,6 @@ protected:
 	UAbilityTask_WaitDelay* WaitDelayTask = nullptr;
 
 	FVector2D CachedInputDirection;
+
+	FVector CachedWorldDashDir = FVector::ZeroVector;
 };
