@@ -136,3 +136,15 @@ void UCoreGameplayAbility_MeleeAoE::OnEventReceived(FGameplayTag EventTag, FGame
 	CueParams.Normal = GroundHit.bBlockingHit ? GroundHit.ImpactNormal : FVector::UpVector;
 	SourceASC->ExecuteGameplayCue(CoreGAS::GameplayCue::TAG_GameplayCue_Impact_MeleeAoE, CueParams);
 }
+
+void UCoreGameplayAbility_MeleeAoE::EndAbility(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	bool bReplicateEndAbility, bool bWasCancelled)
+{
+	if (IsValid(ActiveDecal)) 
+	{
+		ActiveDecal->DestroyComponent();
+	}
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}

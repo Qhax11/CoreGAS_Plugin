@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "AnimNotifyState_MotionWarping.h"
-#include "CoreAnimNotifyState_MotionWarping.generated.h"
+#include "CoreAnimNotifyState_TargetWarping.generated.h"
 
 UCLASS()
-class COREGAS_API UCoreAnimNotifyState_MotionWarping : public UAnimNotifyState_MotionWarping
+class COREGAS_API UCoreAnimNotifyState_TargetWarping : public UAnimNotifyState_MotionWarping
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, Category = "Motion Warping")
-	float StopDistanceFromTarget = 150.f;
+	float StopDistanceFromTarget = 200.f;
 
 	UPROPERTY(EditAnywhere, Category = "Motion Warping")
 	bool bUpdateWarpTargetOnTick = false;

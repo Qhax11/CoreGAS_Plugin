@@ -1,20 +1,20 @@
 // Copyright (c) 2025/26 Synty Studios Limited. All rights reserved.
 
-#include "Gameplay/Animation/Notifies/CoreAnimNotifyState_MotionWarping.h"
+#include "Gameplay/Animation/Notifies/MotionWarping/CoreAnimNotifyState_TargetWarping.h"
 #include "Gameplay/Interfaces/ICoreCombatInterface.h"
 #include "MotionWarpingComponent.h"
 #include "RootMotionModifier.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-void UCoreAnimNotifyState_MotionWarping::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+void UCoreAnimNotifyState_TargetWarping::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	UpdateWarpTarget(MeshComp);
 }
 
-void UCoreAnimNotifyState_MotionWarping::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+void UCoreAnimNotifyState_TargetWarping::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 	float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
@@ -26,11 +26,11 @@ void UCoreAnimNotifyState_MotionWarping::NotifyTick(USkeletalMeshComponent* Mesh
 }
 
 #if WITH_EDITOR
-bool UCoreAnimNotifyState_MotionWarping::CanEditChange(const FProperty* InProperty) const
+bool UCoreAnimNotifyState_TargetWarping::CanEditChange(const FProperty* InProperty) const
 {
 	const bool ParentVal = Super::CanEditChange(InProperty);
 
-	if (InProperty && InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UCoreAnimNotifyState_MotionWarping, StopDistanceFromTarget))
+	if (InProperty && InProperty->GetFName() == GET_MEMBER_NAME_CHECKED(UCoreAnimNotifyState_TargetWarping, StopDistanceFromTarget))
 	{
 		const URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
 		return ParentVal && WarpModifier && WarpModifier->bWarpTranslation;
@@ -40,7 +40,7 @@ bool UCoreAnimNotifyState_MotionWarping::CanEditChange(const FProperty* InProper
 }
 #endif
 
-void UCoreAnimNotifyState_MotionWarping::UpdateWarpTarget(USkeletalMeshComponent* MeshComp)
+void UCoreAnimNotifyState_TargetWarping::UpdateWarpTarget(USkeletalMeshComponent* MeshComp)
 {
 	AActor* Owner = MeshComp ? MeshComp->GetOwner() : nullptr;
 	if (!Owner)
@@ -53,7 +53,6 @@ void UCoreAnimNotifyState_MotionWarping::UpdateWarpTarget(USkeletalMeshComponent
 
 	UMotionWarpingComponent* WarpComp = Owner->FindComponentByClass<UMotionWarpingComponent>();
 	URootMotionModifier_Warp* WarpModifier = Cast<URootMotionModifier_Warp>(RootMotionModifier);
-
 	if (!WarpComp || !WarpModifier)
 	{
 		return;
@@ -74,6 +73,5 @@ void UCoreAnimNotifyState_MotionWarping::UpdateWarpTarget(USkeletalMeshComponent
 	LookAtRotation.Pitch = 0.f;
 	LookAtRotation.Roll  = 0.f;
 
-	WarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(
-		WarpModifier->WarpTargetName, WarpLocation, LookAtRotation);
+	WarpComp->AddOrUpdateWarpTargetFromLocationAndRotation(WarpModifier->WarpTargetName, WarpLocation, LookAtRotation);
 }
