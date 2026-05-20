@@ -5,6 +5,8 @@
 #include "AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Gameplay/Types/CoreGASTypes.h"
+#include "Gameplay/Tags/CoreCombatTags.h"
+#include "Gameplay/Tags/CoreGameplayCueTags.h"
 
 ACoreProjectile::ACoreProjectile()
 {
@@ -59,7 +61,19 @@ void ACoreProjectile::OnProjectileOverlap(UPrimitiveComponent* OverlappedCompone
 
 	if (DamageSpecHandle.IsValid())
 	{
-		ASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+		if (ASC->HasMatchingGameplayTag(CoreGAS::Combat::TAG_State_Block))
+		{
+			FGameplayCueParameters CueParams;
+			CueParams.Location = SweepResult.ImpactPoint;
+			CueParams.Normal = SweepResult.ImpactNormal;
+			CueParams.EffectContext = DamageSpecHandle.Data->GetContext();
+			CueParams.EffectContext.AddHitResult(SweepResult);
+			ASC->ExecuteGameplayCue(CoreGAS::GameplayCue::TAG_GameplayCue_Impact_Block, CueParams);
+		}
+		else
+		{
+			ASC->ApplyGameplayEffectSpecToSelf(*DamageSpecHandle.Data.Get());
+		}
 	}
 
 	BP_OnImpact(SweepResult, true);

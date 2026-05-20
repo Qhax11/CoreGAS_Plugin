@@ -131,22 +131,7 @@ void UCoreGameplayAbility_MeleeAttack::OnTraceHit(const TArray<FHitResult>& HitR
 			continue;
 		}
 
-		for (const TSubclassOf<UGameplayEffect>& EffectClass : HitEffects)
-		{
-			if (!EffectClass)
-			{
-				continue;
-			}
-
-			FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass, GetAbilityLevel());
-			FGameplayEffectContextHandle Context = SpecHandle.Data->GetContext();
-			Context.AddHitResult(Hit, true);  // true = override existing
-
-			if (SpecHandle.IsValid())
-			{
-				SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-			}
-		}
+		ApplyHitToTarget(SourceASC, TargetASC, Hit);
 
 		HitActors.Add(HitActor);
 	}

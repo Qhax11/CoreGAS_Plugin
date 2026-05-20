@@ -10,4 +10,5 @@ namespace CoreGAS::GameplayCue
 	// Impact cue tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Impact_Melee, "GameplayCue.Impact.Melee")
 	UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Impact_MeleeAoE, "GameplayCue.Impact.MeleeAoE")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_GameplayCue_Impact_Block, "GameplayCue.Impact.Block")
 }

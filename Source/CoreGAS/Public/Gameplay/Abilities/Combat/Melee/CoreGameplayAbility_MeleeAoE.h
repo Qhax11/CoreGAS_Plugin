@@ -26,9 +26,6 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee|AoE")
-	TArray<TSubclassOf<UGameplayEffect>> HitEffects;
-
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee|AoE")
 	TObjectPtr<UCoreTraceConfig> AoETraceConfig;
 
 	UPROPERTY(EditAnywhere, Category = "CoreGAS|Melee|AoE")

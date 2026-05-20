@@ -99,23 +99,7 @@ void UCoreGameplayAbility_MeleeAoE::OnEventReceived(FGameplayTag EventTag, FGame
 				continue;
 			}
 
-			for (const TSubclassOf<UGameplayEffect>& EffectClass : HitEffects)
-			{
-				if (!EffectClass)
-				{
-					continue;
-				}
-
-				FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(EffectClass, GetAbilityLevel());
-				if (!SpecHandle.IsValid())
-				{
-					continue;
-				}
-
-				FGameplayEffectContextHandle Context = SpecHandle.Data->GetContext();
-				Context.AddHitResult(Hit, true);
-				SourceASC->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
-			}
+			ApplyHitToTarget(SourceASC, TargetASC, Hit);
 
 			HitActors.Add(HitActor);
 		}

@@ -17,4 +17,11 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Attack")
 	float MaxRange = 150.f;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|AttackBase")
+	TArray<TSubclassOf<UGameplayEffect>> HitEffects;
+
+	void ApplyHitToTarget(UAbilitySystemComponent* SourceASC, UAbilitySystemComponent* TargetASC, const FHitResult& Hit);
+
 };

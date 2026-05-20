@@ -26,9 +26,6 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category = "CoreGAS|Melee")
-	TArray<TSubclassOf<UGameplayEffect>> HitEffects;
-
 	virtual void OnEventReceived(FGameplayTag EventTag, FGameplayEventData EventData) override;
 
 private:

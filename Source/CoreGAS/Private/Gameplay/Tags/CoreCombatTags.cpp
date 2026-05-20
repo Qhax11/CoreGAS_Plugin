@@ -20,6 +20,7 @@ namespace CoreGAS::Combat
 
 	// State tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Combo_Active, "CoreGAS.State.Combo.Active")
+	UE_DEFINE_GAMEPLAY_TAG(TAG_State_Block, "CoreGAS.State.Block")
 
 	// Melee event tags
 	UE_DEFINE_GAMEPLAY_TAG(TAG_Event_Melee_TraceBegin, "CoreGAS.Event.Melee.TraceBegin")

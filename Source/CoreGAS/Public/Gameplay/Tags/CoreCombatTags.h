@@ -23,6 +23,7 @@ namespace CoreGAS::Combat
 
 	// State tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Combo_Active)
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Block)
 
 	// Melee event tags
 	UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Melee_TraceBegin)
