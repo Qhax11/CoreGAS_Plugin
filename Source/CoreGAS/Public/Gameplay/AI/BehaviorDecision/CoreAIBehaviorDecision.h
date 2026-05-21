@@ -23,7 +23,6 @@ public:
 	const FCoreAttackDataBase* GetBestAttack();
 	const FCoreAttackDataBase* GetSelectedAttack() const;
 	FGameplayTag DecideNextState();
-	float GetDistanceToTarget() const;
 
 	UPROPERTY()
 	TObjectPtr<UCoreEnemyAIData> AIData;
@@ -34,6 +33,9 @@ private:
 
 	UPROPERTY()
 	AActor* CachedOwnerActor = nullptr;
+
+	UPROPERTY()
+	AActor* CachedTargetActor = nullptr;
 
 	const FCoreAttackDataBase* SelectedAttack = nullptr;
 };

@@ -3,7 +3,6 @@
 #include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAttack.h"
 #include "Gameplay/Abilities/Tasks/CoreAbilityTask_PerformTrace.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
-#include "Gameplay/Tags/CoreCharacterTags.h"
 #include "Gameplay/Tags/CoreEquipmentTags.h"
 #include "Gameplay/Components/CoreEquipmentComponent.h"
 #include "Gameplay/Actors/Weapon/CoreWeaponBase.h"
@@ -109,8 +108,6 @@ void UCoreGameplayAbility_MeleeAttack::OnTraceHit(const TArray<FHitResult>& HitR
 		return;
 	}
 
-	const bool bSourceIsEnemy = SourceASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy);
-
 	for (const FHitResult& Hit : HitResults)
 	{
 		AActor* HitActor = Hit.GetActor();
@@ -121,12 +118,6 @@ void UCoreGameplayAbility_MeleeAttack::OnTraceHit(const TArray<FHitResult>& HitR
 
 		UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
 		if (!TargetASC)
-		{
-			continue;
-		}
-
-		// Enemy don't hit to another enemy
-		if (bSourceIsEnemy && TargetASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy))
 		{
 			continue;
 		}

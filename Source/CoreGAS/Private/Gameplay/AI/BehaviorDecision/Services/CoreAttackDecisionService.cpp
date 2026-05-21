@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
 #include "Gameplay/AI/BehaviorDecision/Services/CoreAttackDecisionService.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Utilities/Combat/CoreCombatDistance.h"
 #include "Gameplay/Debug/CoreGameplayLog.h"
 
 void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams& Params)
@@ -14,21 +16,35 @@ void UCoreAttackDecisionService::Initialize(const FCoreDecisionServiceInitParams
 const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions)
 {
 	TArray<const FCoreAttackDataBase*> Valid;
-	const float Distance = GetDistanceToTarget();
+	const float Distance = CoreCombat::GetDistance(CachedOwner, CachedTarget);
+
 	for (const TInstancedStruct<FCoreAttackDataBase>& Option : AttackOptions)
 	{
 		const FCoreAttackDataBase* Data = Option.GetPtr<FCoreAttackDataBase>();
-		if (!Data) continue;
-		if (Data->CooldownTag.IsValid() && CachedOwnerASC && CachedOwnerASC->HasMatchingGameplayTag(Data->CooldownTag)) continue;
-		if (Distance < Data->PreferredMinDistance || Distance > Data->PreferredMaxDistance) continue;
+		if (!Data)
+		{
+			continue;
+		}
+
+		if (!IsAttackSelectable(Data, Distance))
+		{
+			continue;
+		}
+
 		Valid.Add(Data);
-		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Candidate: %s | Distance: %.1f | Weight: %.2f"), *Data->AttackName.ToString(), Distance, Data->SelectionWeight);
+		UE_LOG(LogCoreAIDecision, Verbose, TEXT("[AttackDecision] Candidate: %s | Distance: %.1f | Weight: %.2f"), *Data->AttackName.ToString(), Distance, Data->SelectionConfig.SelectionWeight);
 	}
-	if (Valid.IsEmpty()) return nullptr;
+
+	if (Valid.IsEmpty())
+	{
+		return nullptr;
+	}
 
 	float TotalWeight = 0.f;
-	for (const FCoreAttackDataBase* Data : Valid)
-		TotalWeight += Data->SelectionWeight;
+	for (const FCoreAttackDataBase* Data : Valid) 
+	{
+		TotalWeight += Data->SelectionConfig.SelectionWeight;
+	}
 
 	float Roll = FMath::FRandRange(0.f, TotalWeight);
 	float Accumulated = 0.f;
@@ -36,7 +52,7 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 
 	for (const FCoreAttackDataBase* Data : Valid)
 	{
-		Accumulated += Data->SelectionWeight;
+		Accumulated += Data->SelectionConfig.SelectionWeight;
 		if (Roll <= Accumulated)
 		{
 			Selected = Data;
@@ -48,11 +64,30 @@ const FCoreAttackDataBase* UCoreAttackDecisionService::GetBestAttack(const TArra
 	return Selected;
 }
 
-float UCoreAttackDecisionService::GetDistanceToTarget() const
+bool UCoreAttackDecisionService::IsAttackSelectable(const FCoreAttackDataBase* Data, float Distance) const
 {
-	if (!CachedOwner || !CachedTarget)
+	if (!Data)
 	{
-		return MAX_FLT;
+		return false;
 	}
-	return FVector::Dist(CachedOwner->GetActorLocation(), CachedTarget->GetActorLocation());
+
+	if (!Data->AttackAbilityClass || !CachedOwnerASC)
+	{
+		return false;
+	}
+
+	if (Distance < Data->SelectionConfig.SelectionMinDistance || Distance > Data->SelectionConfig.SelectionMaxDistance)
+	{
+		return false;
+	}
+
+	const UGameplayAbility* CDO = Data->AttackAbilityClass->GetDefaultObject<UGameplayAbility>();
+	const FGameplayTagContainer* CooldownTags = CDO ? CDO->GetCooldownTags() : nullptr;
+	if (CooldownTags && !CooldownTags->IsEmpty() && CachedOwnerASC->HasAnyMatchingGameplayTags(*CooldownTags))
+	{
+		return false;
+	}
+
+	return true;
 }
+

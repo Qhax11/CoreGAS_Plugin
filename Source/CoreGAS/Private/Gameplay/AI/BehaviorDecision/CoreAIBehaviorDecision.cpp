@@ -2,6 +2,7 @@
 
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
+#include "Gameplay/Utilities/Combat/CoreCombatDistance.h"
 #include "Gameplay/Debug/CoreGameplayLog.h"
 #include "Gameplay/Tags/CoreAITags.h"
 
@@ -13,6 +14,7 @@ UCoreAIBehaviorDecision::UCoreAIBehaviorDecision()
 void UCoreAIBehaviorDecision::Initialize(AActor* OwnerActor, UCoreASCBase* OwnerASC, AActor* TargetActor, UAbilitySystemComponent* TargetASC)
 {
 	CachedOwnerActor = OwnerActor;
+	CachedTargetActor = TargetActor;
 
 	AttackDecisionService = NewObject<UCoreAttackDecisionService>(this);
 
@@ -50,11 +52,6 @@ const FCoreAttackDataBase* UCoreAIBehaviorDecision::GetSelectedAttack() const
 	return SelectedAttack;
 }
 
-float UCoreAIBehaviorDecision::GetDistanceToTarget() const
-{
-	return AttackDecisionService ? AttackDecisionService->GetDistanceToTarget() : MAX_FLT;
-}
-
 FGameplayTag UCoreAIBehaviorDecision::DecideNextState() 
 {
 	FGameplayTag DecidedTag;
@@ -82,7 +79,8 @@ FGameplayTag UCoreAIBehaviorDecision::DecideNextState()
 				}
 			}
 
-			DecidedTag = (AttackDecisionService->GetDistanceToTarget() > MaxRange)
+			const float Distance = CoreCombat::GetDistance(CachedOwnerActor, CachedTargetActor);
+			DecidedTag = (Distance > MaxRange)
 				? CoreGAS::AI::TAG_State_Combat_Movement
 				: CoreGAS::AI::TAG_State_Combat_Attack;
 		}

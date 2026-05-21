@@ -59,7 +59,7 @@ void ACoreAIController::OnHeroSpawned(const FHeroSpawnData& HeroSpawnData)
 	BehaviorDecision->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, TargetASC);
 	EventHandler->Initialize(StateManager, OwnerASC);
 	StateManager->Initialize(CachedPawn, OwnerASC, HeroSpawnData.HeroActor, BehaviorDecision);
-	DebugComponent->Initialize(CachedPawn, StateManager, BehaviorDecision);
+	DebugComponent->Initialize(CachedPawn, HeroSpawnData.HeroActor, StateManager, BehaviorDecision);
 }
 
 void ACoreAIController::OnUnPossess()

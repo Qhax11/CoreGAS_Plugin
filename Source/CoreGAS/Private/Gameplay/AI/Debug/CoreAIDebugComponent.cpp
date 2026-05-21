@@ -4,6 +4,7 @@
 #include "Gameplay/AI/CoreStateManager.h"
 #include "Gameplay/AI/BehaviorDecision/CoreAIBehaviorDecision.h"
 #include "Gameplay/AI/BehaviorDecision/Data/CoreAttackData.h"
+#include "Gameplay/Utilities/Combat/CoreCombatDistance.h"
 #include "Gameplay/Tags/CoreAITags.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/Pawn.h"
@@ -13,9 +14,10 @@ UCoreAIDebugComponent::UCoreAIDebugComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UCoreAIDebugComponent::Initialize(AActor* OwnerActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision)
+void UCoreAIDebugComponent::Initialize(AActor* OwnerActor, AActor* TargetActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision)
 {
-	ChacedOwner = OwnerActor;
+    CachedOwner = OwnerActor;
+    CachedTarget = TargetActor;
 	StateManager = InStateManager;
 	BehaviorDecision = InBehaviorDecision;
 }
@@ -24,10 +26,10 @@ void UCoreAIDebugComponent::TickComponent(float DeltaTime, ELevelTick TickType, 
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!bEnableDebug || !ChacedOwner || !StateManager || !BehaviorDecision)
+	if (!bEnableDebug || !CachedOwner || !StateManager || !BehaviorDecision)
 		return;
 
-	const FVector BaseLocation = ChacedOwner->GetActorLocation() + FVector(0.f, 0.f, 200.f);
+	const FVector BaseLocation = CachedOwner->GetActorLocation() + FVector(0.f, 0.f, 200.f);
 	DrawState(BaseLocation);
 	DrawAttack(BaseLocation);
 	DrawDistance(BaseLocation);
@@ -74,9 +76,10 @@ void UCoreAIDebugComponent::DrawAttack(const FVector& BaseLocation) const
 void UCoreAIDebugComponent::DrawDistance(const FVector& BaseLocation) const
 {
 	FString DistLabel = TEXT("N/A");
-	const float Dist = BehaviorDecision->GetDistanceToTarget();
-	if (Dist < MAX_FLT)
-		DistLabel = FString::Printf(TEXT("%.0f"), Dist);
+    const float Distance = CoreCombat::GetDistance(CachedOwner, CachedTarget);
+
+	if (Distance < MAX_FLT)
+		DistLabel = FString::Printf(TEXT("%.0f"), Distance);
 
 	DrawDebugString(GetWorld(), BaseLocation + FVector(0.f, 0.f, 50.f), FString::Printf(TEXT("Dist: %s"), *DistLabel), nullptr, FColor::Cyan, 0.f, true);
 }

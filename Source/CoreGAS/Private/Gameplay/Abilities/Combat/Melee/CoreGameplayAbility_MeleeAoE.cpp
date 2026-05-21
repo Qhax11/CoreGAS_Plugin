@@ -2,7 +2,6 @@
 
 #include "Gameplay/Abilities/Combat/Melee/CoreGameplayAbility_MeleeAoE.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
-#include "Gameplay/Tags/CoreCharacterTags.h"
 #include "Gameplay/Tags/CoreGameplayCueTags.h"
 #include "Gameplay/Tracing/CoreTraceConfig.h"
 #include "AbilitySystemBlueprintLibrary.h"
@@ -77,7 +76,6 @@ void UCoreGameplayAbility_MeleeAoE::OnEventReceived(FGameplayTag EventTag, FGame
 
 	if (!HitEffects.IsEmpty())
 	{
-		const bool bSourceIsEnemy = SourceASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy);
 		TSet<AActor*> HitActors;
 
 		for (const FHitResult& Hit : HitResults)
@@ -90,11 +88,6 @@ void UCoreGameplayAbility_MeleeAoE::OnEventReceived(FGameplayTag EventTag, FGame
 
 			UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(HitActor);
 			if (!TargetASC)
-			{
-				continue;
-			}
-
-			if (bSourceIsEnemy && TargetASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy))
 			{
 				continue;
 			}

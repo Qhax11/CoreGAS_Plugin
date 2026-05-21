@@ -17,7 +17,7 @@ class COREGAS_API UCoreAIDebugComponent : public UActorComponent
 public:
 	UCoreAIDebugComponent();
 
-	void Initialize(AActor* OwnerActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision);
+	void Initialize(AActor* OwnerActor, AActor* TargetActor, UCoreStateManager* InStateManager, UCoreAIBehaviorDecision* InBehaviorDecision);
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -36,5 +36,8 @@ private:
 	TObjectPtr<UCoreAIBehaviorDecision> BehaviorDecision;
 
 	UPROPERTY()
-	TObjectPtr<AActor> ChacedOwner;
+	TObjectPtr<AActor> CachedOwner;
+
+	UPROPERTY()
+	TObjectPtr<AActor> CachedTarget;
 };

@@ -2,11 +2,20 @@
 
 #include "Gameplay/Abilities/Combat/CoreGameplayAbility_AttackBase.h"
 #include "Gameplay/Tags/CoreCombatTags.h"
+#include "Gameplay/Tags/CoreCharacterTags.h"
 #include "Gameplay/Tags/CoreGameplayCueTags.h"
 #include "AbilitySystemComponent.h"
 
 void UCoreGameplayAbility_AttackBase::ApplyHitToTarget(UAbilitySystemComponent* SourceASC, UAbilitySystemComponent* TargetASC, const FHitResult& Hit)
 {
+    const bool bSourceIsEnemy = SourceASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy);
+
+    // Enemy don't hit to another enemy
+    if (bSourceIsEnemy && TargetASC->HasMatchingGameplayTag(CoreGAS::Character::TAG_Entity_Enemy))
+    {
+        return;
+    }
+
     // Block check
     if (TargetASC->HasMatchingGameplayTag(CoreGAS::Combat::TAG_State_Block))
     {

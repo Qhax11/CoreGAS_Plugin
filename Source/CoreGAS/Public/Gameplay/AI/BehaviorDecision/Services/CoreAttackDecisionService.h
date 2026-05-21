@@ -34,9 +34,10 @@ class COREGAS_API UCoreAttackDecisionService : public UObject
 public:
 	virtual void Initialize(const FCoreDecisionServiceInitParams& Params);
 	const FCoreAttackDataBase* GetBestAttack(const TArray<TInstancedStruct<FCoreAttackDataBase>>& AttackOptions);
-	float GetDistanceToTarget() const;
 
 protected:
+	bool IsAttackSelectable(const FCoreAttackDataBase* Data, float Distance) const;
+
 	UPROPERTY()
 	TObjectPtr<AActor> CachedOwner;
 
