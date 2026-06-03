@@ -1,6 +1,6 @@
 # CoreGAS Plugin
 
-A modular Gameplay Ability System plugin for Unreal Engine 5, designed as a drop-in foundation for third-person action combat games. Built in C++.
+A modular Gameplay Ability System plugin for Unreal Engine 5, designed as a drop-in foundation for single-player third-person action combat games. Built in C++.
 
 > 🎮 Used in [ProjectX](https://www.youtube.com/watch?v=EhdeD4uLL0I) — a third-person action game built entirely on this plugin.
 
@@ -11,7 +11,6 @@ A modular Gameplay Ability System plugin for Unreal Engine 5, designed as a drop
 - **Ability System** — GameplayTag-based execution conditions, count-based tag stacking, custom Attribute System
 - **Effect System** — Instant, duration, and infinite effect types with support for attack speed, lifesteal, and critical damage calculations
 - **Targeting System** — Projectile and targeted abilities, combo chains, and CC ability support
-- **Multiplayer Ready** — Full replication support across all major gameplay systems
 - **AI Integration** — Compatible with custom AI decision-making and combat state management
 
 ---
