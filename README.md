@@ -18,7 +18,7 @@ A modular Gameplay Ability System plugin for Unreal Engine 5, designed as a drop
 
 ## Requirements
 
-- Unreal Engine 5.x
+- Unreal Engine 5.7
 - C++ project
 
 ---
