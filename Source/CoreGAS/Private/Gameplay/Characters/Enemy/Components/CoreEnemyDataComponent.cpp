@@ -16,6 +16,10 @@ void UCoreEnemyDataComponent::Initialize(UCoreASCBase* ASC, UAttributeSet* Attri
 
 	AAIController* AIC = GetOwner() ? Cast<AAIController>(GetOwner()->GetInstigatorController()) : nullptr;
 	ACoreAIController* CoreAIC = Cast<ACoreAIController>(AIC);
+	if (!CoreAIC)
+	{
+		return;
+	}
 
 	CoreAIC->GetBehaviorDecision()->SetBehaviorData(AIData);
 	UCoreGASLibrary::ApplyGASData(ASC, AttributeSet, GASData);
